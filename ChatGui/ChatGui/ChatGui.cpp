@@ -20,15 +20,7 @@ ChatGui::ChatGui(QWidget *parent)
 
     const char* dbPath = "chatHistory.db"; // Path to database
 
-    QLabel* bubble = new QLabel("Hello, how are you?");
-    bubble->setStyleSheet(
-        "background-color: #0078D7;"
-        "color: white;"
-        "padding: 8px;"
-        "border-radius: 10px;"
-    );
-    bubble->setWordWrap(true);
-    qDebug() << "Hello\n\n\n\n";
+
     DeactiveSS = "QPushButton{\n""background-color:#2aa5ff;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n"
             "}";
 
@@ -49,6 +41,7 @@ ChatGui::ChatGui(QWidget *parent)
         int newheight = visline * height + pad;
         ui.textEdit->setFixedHeight(newheight);
         });
+    AddMessage("What can I help you with?", 0);
 
 }
 
@@ -56,27 +49,8 @@ ChatGui::~ChatGui()
 {}
 
 void ChatGui::on_CreateNewButton_clicked() {
-    QFont font1;
-    font1.setPointSize(15);
-    font1.setBold(true);
-    font1.setWeight(75);
-    QPushButton* TempTest;
-    TempTest = new QPushButton(ui.scrollAreaWidgetContents_3);
-    TempTest->setFont(font1);
-    TempTest->setStyleSheet(DeactiveSS);
+    AddMessage("What can I help you with?", 0);
     
-    TempTest->setMinimumSize(QSize(100, 25));
-    ui.verticalLayout_2->addWidget(TempTest, 0, Qt::AlignTop);
-
-    connect(TempTest, &QPushButton::clicked, this, &::ChatGui::ActiveButton_Click);
-    int size = clist.Size();
-    TempTest->setProperty("ChatId", clist.GetMyID());
-    int id = clist.GetMyID();
-    QString name = "ChatID:" + QString::number(id);
-    TempTest->setText(name);
-    clist.AddList(TempTest);
-    ActiveButton = TempTest;
-    clist.SetActive(id);
 }
 
 
@@ -124,7 +98,28 @@ void ChatGui::on_DeleteButton_clicked() {
 void ChatGui::on_SendButton_clicked() {
     
     if (ActiveButton == nullptr) {
-        on_CreateNewButton_clicked();
+        QFont font1;
+        font1.setPointSize(15);
+        font1.setBold(true);
+        font1.setWeight(75);
+        QPushButton* TempTest;
+        TempTest = new QPushButton(ui.scrollAreaWidgetContents_3);
+        TempTest->setFont(font1);
+        TempTest->setStyleSheet(DeactiveSS);
+
+        TempTest->setMinimumSize(QSize(100, 25));
+        ui.verticalLayout_2->addWidget(TempTest, 0, Qt::AlignTop);
+
+        connect(TempTest, &QPushButton::clicked, this, &::ChatGui::ActiveButton_Click);
+        int size = clist.Size();
+        TempTest->setProperty("ChatId", clist.GetMyID());
+        int id = clist.GetMyID();
+        QString name = "ChatID:" + QString::number(id);
+        TempTest->setText(name);
+        clist.AddList(TempTest);
+        ActiveButton = TempTest;
+        clist.SetActive(id);
+
 
     }
     QString message = ui.textEdit->toPlainText();
