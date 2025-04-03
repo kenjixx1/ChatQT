@@ -18,12 +18,15 @@ public:
 
    void createDataBase(int rc);
    void updateMessages(int id, const string& user, const string& system);
-   void newSession();
-   void changeSessionName(int id, const string& name);
+   void addSessionRow();
+   void updateSessionName(int id, const string& name);
    void updateHistorySize(int id, int size);
    bool checkQuery(int rc);
    void createTable(int rc, const char* sql);
    string getAIResponse(const string& userMessage);
+   void sessionSelected(Session* session, int page);
+   void loadSessions();
+   void loadConversation();
 
 private slots:
    void on_CreateNewButton_clicked();
@@ -40,7 +43,8 @@ private:
    QString DeactiveSS;
    ChatList clist;
    Ui::ChatGuiClass ui;
-   Session current_session;
+   Session* current_session;
+   int session_quantity;
    sqlite3* db;
    char* errMsg = 0;
 };

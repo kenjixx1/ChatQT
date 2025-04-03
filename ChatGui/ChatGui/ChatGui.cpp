@@ -12,13 +12,23 @@
 #include <qfontmetrics.h>
 #include <qinputdialog.h>
 
-
 ChatGui::ChatGui(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
 
+	current_session = nullptr; 
     const char* dbPath = "chatHistory.db"; // Path to database
+    int rc;
+
+	// Check if the database file exists and create tables else open the database
+	if (!QFile::exists(dbPath)) {
+        rc = sqlite3_open(dbPath, &db);
+		createDataBase(rc);
+    }
+    else {
+		rc = sqlite3_open(dbPath, &db);
+    }
 
     QLabel* bubble = new QLabel("Hello, how are you?");
     bubble->setStyleSheet(
@@ -240,10 +250,20 @@ void ChatGui::AddMessage(QString message, bool sender) {
     );
 }
 
+void ChatGui::sessionSelected(Session* session, int page) {
+	current_session = session;
+    
+	if (current_session->getLoadSize() < current_session->getHistorySize()) {
+		loadConversation();
+	}
+
+	// Change stacked widget to the conversation page
+}
+
 // Get AI response from the current session
 string ChatGui::getAIResponse(const string& userMessage) {
-	string response = current_session.getResponse(userMessage);
-	updateMessages(current_session.getID(), userMessage, response);
+	string response = current_session->getResponse(userMessage);
+	updateMessages(current_session->getID(), userMessage, response);
     return response;
 }
 
@@ -294,7 +314,7 @@ void ChatGui::updateMessages(int id, const string& user, const string& system) {
 }
 
 // Create a new session in the database
-void ChatGui::newSession() {
+void ChatGui::addSessionRow() {
     sqlite3_stmt* stmt;
     const char* sql = "INSERT INTO messages (name, history_size) VALUES (?, 0);";
 
@@ -315,7 +335,7 @@ void ChatGui::newSession() {
 }
 
 // Change the name of a session in the database
-void ChatGui::changeSessionName(int id, const string& name) {
+void ChatGui::updateSessionName(int id, const string& name) {
     sqlite3_stmt* stmt;
     const char* sql = "UPDATE sessions SET name = ? WHERE id = ?;";
 
@@ -358,6 +378,10 @@ void ChatGui::updateHistorySize(int id, int size) {
     }
 
     sqlite3_finalize(stmt);
+}
+
+void ChatGui::loadConversation() {
+
 }
 
 bool ChatGui::checkQuery(int rc) {
