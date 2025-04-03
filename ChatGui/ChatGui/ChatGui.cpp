@@ -1,4 +1,5 @@
 #include "ChatGui.h"
+#include "Session.h"
 #include <iostream>
 #include <qdebug.h>
 #include <qapplication.h>
@@ -16,6 +17,9 @@ ChatGui::ChatGui(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
+
+    const char* dbPath = "chatHistory.db"; // Path to database
+
     QLabel* bubble = new QLabel("Hello, how are you?");
     bubble->setStyleSheet(
         "background-color: #0078D7;"
@@ -234,4 +238,140 @@ void ChatGui::AddMessage(QString message, bool sender) {
         scrollbar->setValue(ui.TestMessageScrollArea->verticalScrollBar()->maximum()-1);
         }
     );
+}
+
+// Get AI response from the current session
+string ChatGui::getAIResponse(const string& userMessage) {
+	string response = current_session.getResponse(userMessage);
+	updateMessages(current_session.getID(), userMessage, response);
+    return response;
+}
+
+// Create the database and tables if they do not exist
+void ChatGui::createDataBase(int rc) {
+    const char* sessions = R"(
+        CREATE TABLE IF NOT EXISTS sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        history_size INTEGER NOT NULL
+        );
+    )";
+    createTable(rc, sessions);
+
+    const char* messages = R"(
+        CREATE TABLE IF NOT EXISTS messages (
+        session_id INTEGER NOT NULL,
+        user TEXT NOT NULL,
+        system TEXT NOT NULL,
+        FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+        );
+    )";
+    createTable(rc, messages);
+}
+
+// Update messages in the database
+void ChatGui::updateMessages(int id, const string& user, const string& system) {
+    sqlite3_stmt* stmt;
+    const char* sql = "INSERT INTO messages (session_id, user, system) VALUES (?, ?, ?);";
+
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (checkQuery(rc)) {
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    //Bind the data
+    sqlite3_bind_int(stmt, 1, id);
+    sqlite3_bind_text(stmt, 2, user.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 3, system.c_str(), -1, SQLITE_STATIC);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        qDebug() << "Failed to insert the messages: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+// Create a new session in the database
+void ChatGui::newSession() {
+    sqlite3_stmt* stmt;
+    const char* sql = "INSERT INTO messages (name, history_size) VALUES (?, 0);";
+
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (checkQuery(rc)) {
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    sqlite3_bind_text(stmt, 1, "", -1, SQLITE_STATIC);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        qDebug() << "Failed to insert the messages: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+// Change the name of a session in the database
+void ChatGui::changeSessionName(int id, const string& name) {
+    sqlite3_stmt* stmt;
+    const char* sql = "UPDATE sessions SET name = ? WHERE id = ?;";
+
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (checkQuery(rc)) {
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    //Bind the data
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 2, id);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        qDebug() << "Failed to insert the messages: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+// Update the history size of a session in the database
+void ChatGui::updateHistorySize(int id, int size) {
+    sqlite3_stmt* stmt;
+    const char* sql = "UPDATE sessions SET hisotory_size = ? WHERE id = ?;";
+
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (checkQuery(rc)) {
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    //Bind the data
+    sqlite3_bind_int(stmt, 1, size);
+    sqlite3_bind_int(stmt, 2, id);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        qDebug() << "Failed to insert the messages: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+bool ChatGui::checkQuery(int rc) {
+	if (rc != SQLITE_OK) {
+		qDebug() << "SQL error:" << sqlite3_errmsg(db);
+		return false;
+	}
+	return true;
+}
+
+void ChatGui::createTable(int rc, const char* sql) {
+	rc = sqlite3_exec(db, sql, nullptr, 0, &errMsg);
+	if (rc != SQLITE_OK) {
+		qDebug() << "SQL error:" << errMsg;
+		sqlite3_free(errMsg);
+	}
 }

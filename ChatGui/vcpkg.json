@@ -1,6 +1,7 @@
 {
   "dependencies": [
     "curlcpp",
-    "nlohmann-json"
+    "nlohmann-json",
+    "sqlitecpp"
   ]
 }
