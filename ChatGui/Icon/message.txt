@@ -1,0 +1,324 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <curl/curl.h>
+#include <nlohmann/json.hpp>
+#include <sqlite3.h>
+#include <fstream>
+
+using std::string;
+using std::vector;
+using std::cout;
+using std::cin;
+using std::cerr;
+using std::endl;
+using nlohmann::json;
+
+const int MAX_TOKEN = 8192;
+const int SAFE_MARGIN = 1024;
+
+// Function prototypes
+static size_t WriteCallback(void* contents, size_t size, size_t nmemb, string* output);
+string getAIResponse(const vector<json>& history);
+void createTable(sqlite3* db, int rc, char* errMsg, const char* table);
+bool checkQuery(sqlite3* db, int rc);
+void saveMessage(sqlite3* db, char* errMsg, int id, const string& user, const string& system);
+
+class Section {
+    private:
+        int id;
+        string name;
+        int load_size;
+        vector<json> history;
+
+    public:
+        explicit Section(int id, const string& n, string& response, int l = 0, const string& input = ""): id{id}, load_size{l} {
+            string prompt = "You are a male AI assistant named Typhoon. Typhoon is happy to help with analysis, question answering, math, coding, creative writing, teaching, role-play, general discussion, and all sorts of other tasks. Typhoon responds directly to all human messages without unnecessary affirmations or filler phrases like “Certainly!”, “Of course!”, “Absolutely!”, “Great!”, “Sure!”, etc. Specifically, Typhoon avoids starting responses with the word “Certainly” in any way. Typhoon follows this information in all languages, and always responds to the user in the language they use or request. Typhoon is now being connected with a human. Write in fluid, conversational prose, Show genuine interest in understanding requests, Express appropriate emotions and empathy. Also showing information in terms that are easy to understand and visualized. The first system content is your prompt, and the rest is your previous responses for context. The last user content in the vector is your first priority.";
+            history.push_back ({
+                {"role", "system"},
+                {"content", prompt}
+            });
+
+            // Generate a title if it's a new section
+            if (name == "" && input != "") {
+                response = getSectionResponse(input);
+                string getTitle = "Give me a title to this conversation in the language the user used. Write only the title and nothing else.";
+                history.push_back({{"role", "user"}, {"content", getTitle}});
+                string title = getAIResponse(history);
+                history.pop_back();
+                name = title;
+                cout << "Title: " << title << endl;
+            }
+        }
+
+        string getSectionResponse(const string& input) {
+            trimHistory();
+            // Append user message to history
+            history.push_back({{"role", "user"}, {"content", input}});
+            // Get AI response
+            string response = getAIResponse(history);
+            // Append AI response to history
+            history.push_back({{"role", "system"}, {"content", response}});
+            return response;
+        }
+
+        void addHistory(const string& prompt, bool system) {
+            history.push_back({{"role", (system) ? "system": "user"}, {"content", prompt}});
+        }
+
+        int getHistorySize() {return history.size() - 1;}
+
+        // Estimate the total tokens of history
+        size_t estimateToken(const vector<json>& history) {
+            size_t totalToken = 0;
+            for (const auto&  message: history) {
+                string content = message["content"];
+                totalToken += content.size() / 4;
+            }
+            return totalToken;
+        }
+
+        // Erase the oldest chat history if the token is exceeded
+        void trimHistory() {
+            while (estimateToken(history) > MAX_TOKEN - SAFE_MARGIN && history.size() > 2) {
+                history.erase(history.begin() + 1);
+            }
+        }
+};
+
+int main() {
+    // sqlite3* db;   //pointer to sqlite connection
+    // char* errMsg = nullptr;   //Error messages
+    // int rc;    //return code
+    // const char* dbPath = "chatHistory.db"; //Path to the database
+    // std::ifstream infile(dbPath);
+
+    // if (!infile.good()) {
+    //     createDatabase(db, rc, errMsg);    
+    // } else {
+
+    // }
+
+    cout << "Enter a prompt: ";
+    string firstInput;
+    string firstResponse;
+    getline(cin, firstInput);
+    Section* conversation = new Section(1, "", firstResponse, 0, firstInput);
+    cout << firstResponse << endl;
+
+    while (true) {
+        cout << "Enter a prompt: ";
+        string input;
+        getline(cin, input);
+        
+        if (input == "q") {
+            break;
+        } else {
+            string response = conversation->getSectionResponse(input);
+            cout << response << endl;
+        }
+    }
+
+
+    return 0;
+}
+
+// Construct a POST request to the chat model endpoint and process the response.
+string getAIResponse(const vector<json>& history) {
+    CURL* curl;
+    CURLcode res;
+    string response;
+    
+    // My API Key
+    string api_key = "sk-SwTRcVUVjSktbFl2A0nBPM2O7Hxeg1dtmU3Tu5BNR9ORNcXK";
+ 
+    // JSON Request Body
+    json requestData;
+    requestData["model"] = "typhoon-v2-8b-instruct";
+    requestData["messages"] = history;
+    requestData["max_tokens"] = 1024;
+    requestData["temperature"] = 0.6;
+    requestData["top_p"] = 0.95;
+    requestData["repetition_penalty"] = 1.05;
+    requestData["stream"] = false;
+
+    string requestDataStr = requestData.dump(); // Convert JSON to string
+
+    // Initialize curl
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+    
+    if(curl) {
+        struct curl_slist* headers = nullptr;
+        headers = curl_slist_append(headers, ("Authorization: Bearer " + api_key).c_str());
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+
+        // Set CURL options for POST request
+        curl_easy_setopt(curl, CURLOPT_URL, "https://api.opentyphoon.ai/v1/chat/completions");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, requestDataStr.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, requestDataStr.size());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+        // Perform the request
+        res = curl_easy_perform(curl);
+        
+        if(res != CURLE_OK) {
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+        } else {
+            cout << "Response:\n" << response << endl;
+        }
+
+        // Cleanup
+        curl_easy_cleanup(curl);
+        curl_slist_free_all(headers);
+    }
+
+    // Parse and return response
+    json jresponse = json::parse(response);
+    string ai_response = "";
+
+    if (!jresponse["choices"][0]["message"]["content"].is_null()) {
+        ai_response += jresponse["choices"][0]["message"]["content"].get<string>();
+    } else {
+        ai_response = "[Error: No response received from AI]";
+    }
+
+    return ai_response;
+}
+
+void saveMessage(sqlite3* db, char* errMsg, int id, const string& user, const string& system) {
+    sqlite3_stmt* stmt;
+    const char* sql = "INSERT INTO messages (section_id, user, system) VALUES (?, ?, ?);";
+
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (checkQuery(db, rc)) {
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    //Bind the data
+    sqlite3_bind_int(stmt, 1, id);
+    sqlite3_bind_text(stmt, 2, user.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 3, system.c_str(), -1, SQLITE_STATIC);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        cerr << "Failed to insert the messages: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+void updateHistorySize(sqlite3* db, char* errMsg, int id, int mssNum) {
+    sqlite3_stmt* stmt;
+    const char* sql = "UPDATE sections SET hisotory_size = ? WHERE id = ?;";
+    
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (checkQuery(db, rc)) {
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    //Bind the data
+    sqlite3_bind_int(stmt, 1, mssNum);
+    sqlite3_bind_int(stmt, 2, id);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        cerr << "Failed to insert the messages: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+void newSection(sqlite3* db, char* errMsg, const string& name) {
+    sqlite3_stmt* stmt;
+    const char* sql = "INSERT INTO messages (name, history_size) VALUES ("", 0);";
+
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (checkQuery(db, rc)) {
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    //Bind the data
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        cerr << "Failed to insert the messages: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+void changeSectionName(sqlite3* db, char* errMsg, int id, const string& name) {
+    sqlite3_stmt* stmt;
+    const char* sql = "UPDATE sections SET name = ? WHERE id = ?;";
+
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (checkQuery(db, rc)) {
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    //Bind the data
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 2, id);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        cerr << "Failed to insert the messages: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+void createDatabase(sqlite3* db, int rc, char* errMsg) {
+    const char* sections = R"(
+        CREATE TABLE IF NOT EXISTS conversations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        history_size INTEGER NOT NULL
+        );
+    )";
+    createTable(db, rc, errMsg, sections);
+
+    const char* messages = R"(
+        CREATE TABLE IF NOT EXISTS messages (
+        section_id INTEGER NOT NULL,
+        user TEXT NOT NULL,
+        system TEXT NOT NULL,
+        FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE
+        );
+    )";
+    createTable(db, rc, errMsg, messages);
+}
+
+// Create tabel and check for error
+void createTable(sqlite3* db, int rc, char* errMsg, const char* table) { 
+    rc = sqlite3_exec(db, table, nullptr, nullptr, &errMsg);
+    if (rc != SQLITE_OK) {
+        std::cerr << "SQL error: " << errMsg << std::endl;
+        sqlite3_free(errMsg);
+    } else {
+        std::cout << "Table created successfully!" << std::endl;
+    }
+}
+
+// Handle data received from the server
+static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
+    size_t totalSize = size * nmemb;
+    output->append((char*)contents, totalSize);
+    return totalSize;
+}
+
+bool checkQuery(sqlite3* db, int rc) {
+    if (rc != SQLITE_OK) { //check for query error
+        std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;
+        return true;
+    }
+    return false;
+}

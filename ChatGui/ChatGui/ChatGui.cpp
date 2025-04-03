@@ -216,8 +216,6 @@ void ChatGui::AddMessage(QString message, bool sender) {
     );
     
     
-    
-    
     if (sender) {
         layout->addStretch();
         layout->addWidget(text,0,Qt::AlignCenter);
