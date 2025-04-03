@@ -1,0 +1,11 @@
+﻿   Qt/MSBuild: 3.3.1.1
+   Qt: 5.12.2
+  ChatGui.cpp
+C:\Users\Kenji\Desktop\ChatQT\ChatGui\ChatGui\chatlist.h(33,19): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'ChatGui.cpp')
+  
+C:\Users\Kenji\Desktop\ChatQT\ChatGui\ChatGui\chatlist.h(46,9): warning C4804: '<': unsafe use of type 'bool' in operation
+  (compiling source file 'ChatGui.cpp')
+  
+C:\Users\Kenji\Desktop\ChatQT\ChatGui\ChatGui\chatlist.h(49,1): warning C4715: 'ChatList::GetButton': not all control paths return a value
+  ChatGui.vcxproj -> C:\Users\Kenji\Desktop\ChatQT\ChatGui\x64\Debug\ChatGui.exe
