@@ -123,9 +123,7 @@ void ChatGui::ClearLayout(QLayout* layout) {
 
 void ChatGui::on_DeleteButton_clicked() {
     if (current_session != nullptr) {
-        int id = ActiveButton->property("ChatId").toInt();
-        clist.Remove(id);
-        LoadChatHistory();
+        
     }
     current_session = nullptr;
     
@@ -133,7 +131,7 @@ void ChatGui::on_DeleteButton_clicked() {
 
 void ChatGui::on_SendButton_clicked() {
     //Binding Button
-    if (ActiveButton == nullptr) {
+    if (current_session == nullptr) {
         QFont font1;
         font1.setPointSize(15);
         font1.setBold(true);
@@ -288,7 +286,7 @@ int ChatGui::addSessionRow() {
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if (checkQuery(rc)) {
         sqlite3_finalize(stmt);
-        return;
+        return 0;
     }
 
     sqlite3_bind_text(stmt, 1, "", -1, SQLITE_STATIC);
