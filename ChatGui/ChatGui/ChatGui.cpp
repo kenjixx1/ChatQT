@@ -13,7 +13,6 @@
 #include <qinputdialog.h>
 #include "chatframe.h"
 
-
 ChatGui::ChatGui(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -23,7 +22,18 @@ ChatGui::ChatGui(QWidget *parent)
     ui.StackedChatFrame->setCurrentWidget(FirstPage->page);
     CurrentChatFrame = FirstPage;
 
+	current_session = nullptr; 
     const char* dbPath = "chatHistory.db"; // Path to database
+    int rc;
+
+	// Check if the database file exists and create tables else open the database
+	if (!QFile::exists(dbPath)) {
+        rc = sqlite3_open(dbPath, &db);
+		createDataBase(rc);
+    }
+    else {
+		rc = sqlite3_open(dbPath, &db);
+    }
 
 
     DeactiveSS = "QPushButton{\n""background-color:#2aa5ff;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n"
@@ -250,10 +260,20 @@ void ChatGui::AddMessage(QString message, bool sender) {
     //);
 }
 
+void ChatGui::sessionSelected(Session* session, int page) {
+	current_session = session;
+    
+	if (current_session->getLoadSize() < current_session->getHistorySize()) {
+		loadConversation();
+	}
+
+	// Change stacked widget to the conversation page
+}
+
 // Get AI response from the current session
 string ChatGui::getAIResponse(const string& userMessage) {
-	string response = current_session.getResponse(userMessage);
-	updateMessages(current_session.getID(), userMessage, response);
+	string response = current_session->getResponse(userMessage);
+	updateMessages(current_session->getID(), userMessage, response);
     return response;
 }
 
@@ -304,7 +324,7 @@ void ChatGui::updateMessages(int id, const string& user, const string& system) {
 }
 
 // Create a new session in the database
-void ChatGui::newSession() {
+void ChatGui::addSessionRow() {
     sqlite3_stmt* stmt;
     const char* sql = "INSERT INTO messages (name, history_size) VALUES (?, 0);";
 
@@ -325,7 +345,7 @@ void ChatGui::newSession() {
 }
 
 // Change the name of a session in the database
-void ChatGui::changeSessionName(int id, const string& name) {
+void ChatGui::updateSessionName(int id, const string& name) {
     sqlite3_stmt* stmt;
     const char* sql = "UPDATE sessions SET name = ? WHERE id = ?;";
 
@@ -368,6 +388,70 @@ void ChatGui::updateHistorySize(int id, int size) {
     }
 
     sqlite3_finalize(stmt);
+}
+
+// Load all sessions from the database          
+void ChatGui::loadSessions() {
+	sqlite3_stmt* stmt;
+	const char* sql = "SELECT id, name, history_size FROM sessions;";
+	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+	if (checkQuery(rc)) {
+		sqlite3_finalize(stmt);
+		return;
+	}
+	while (sqlite3_step(stmt) == SQLITE_ROW) {
+		int id = sqlite3_column_int(stmt, 0);
+		const char* name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+		int history_size = sqlite3_column_int(stmt, 2);
+		// Add sessions and connect
+	}
+	sqlite3_finalize(stmt);
+}
+
+// Load the conversation history for the current session
+void ChatGui::loadConversation() {
+	sqlite3_stmt* stmt;
+	const char* sql = "SELECT user, system FROM messages WHERE session_id = ?;";
+	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+	if (checkQuery(rc)) {
+		sqlite3_finalize(stmt);
+		return;
+	}
+	sqlite3_bind_int(stmt, 1, current_session->getID());
+
+	int his_track = countMessages() - current_session->getLoadSize(); // Track when to push messages into history (for AI)
+	while (sqlite3_step(stmt) == SQLITE_ROW) {
+		const char* user = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+		const char* system = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+		AddMessage(QString::fromStdString(user), 1);
+		AddMessage(QString::fromStdString(system), 0);
+		
+        if (his_track <= 0) {
+			current_session->addHistory(user, 1);
+			current_session->addHistory(system, 0);
+        }
+
+		his_track--;
+	}
+	sqlite3_finalize(stmt);
+}
+
+// Count the number of messages in the current session
+int ChatGui::countMessages() {
+	sqlite3_stmt* stmt;
+	const char* sql = "SELECT COUNT(*) FROM messages WHERE session_id = ?;";
+	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+	if (checkQuery(rc)) {
+		sqlite3_finalize(stmt);
+		return 0;
+	}
+	sqlite3_bind_int(stmt, 1, current_session->getID());
+	int count = 0;
+	if (sqlite3_step(stmt) == SQLITE_ROW) {
+		count = sqlite3_column_int(stmt, 0);
+	}
+	sqlite3_finalize(stmt);
+	return count;
 }
 
 bool ChatGui::checkQuery(int rc) {

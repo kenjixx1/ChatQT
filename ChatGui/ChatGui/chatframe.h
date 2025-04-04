@@ -97,58 +97,6 @@ public:
             scrollbar->setValue(scrollarea->verticalScrollBar()->maximum() - 1);
         });
 
-        //QFrame* tempFrame = new QFrame(content);
-        //tempFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
-        //tempFrame->setStyleSheet(QString::fromUtf8("background-color:#1f2023;"));
-        //tempFrame->setFrameShape(QFrame::StyledPanel);
-
-
-        //QHBoxLayout* layout = new QHBoxLayout(tempFrame);
-        //layout->setSpacing(6);
-        //layout->setContentsMargins(10, 10, 10, 10);
-
-        //QFont font;
-        //font.setPointSize(14);
-
-        //QLabel* text = new QLabel(message);
-        //text->setMaximumWidth(scrollarea->width() * 0.8);
-        //text->setFont(font);
-        //text->setTextInteractionFlags(Qt::TextBrowserInteraction);
-        //text->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
-        //text->setStyleSheet(QString::fromUtf8("color: rgb(255, 255, 255);"));
-
-        //QTimer::singleShot(10, this, [=]() {
-        //    if (text->width() > scrollarea->width() * 0.7) {
-        //        text->setMinimumWidth(scrollarea->width() * 0.5);
-        //        text->setWordWrap(true);
-        //        //QMessageBox::information(nullptr, "Y", "Text:" + QString::number(text->width()) + "|| Frame:" + QString::number(ui.TestMessageScrollArea->width() * 0.7));
-
-        //    }
-        //    else {
-        //        //QMessageBox::information(nullptr, "X", "Text:" + QString::number(text->width()) + "|| Frame:" + QString::number(ui.TestMessageScrollArea->width() * 0.7));
-        //        text->setWordWrap(false);
-        //    }
-        //    }
-        //);
-        //if (sender) {
-        //    layout->addStretch();
-        //    layout->addWidget(text, 0, Qt::AlignCenter);
-        //    messagelayout->addWidget(tempFrame, 0, Qt::AlignRight);
-        //}
-        //else {
-        //    layout->addWidget(text, 0, Qt::AlignCenter);
-        //    layout->addStretch();
-        //    messagelayout->addWidget(tempFrame, 0, Qt::AlignLeft);
-
-        //}
-        ////QMessageBox::information(nullptr, "Height", QString::number(ui.TestMessageScrollArea->verticalScrollBar()->maximum()));
-
-        //QTimer::singleShot(10, this, [=]() {
-        //    QScrollBar* scrollbar = scrollarea->verticalScrollBar();
-        //    scrollbar->setValue(scrollarea->verticalScrollBar()->maximum() - 1);
-        //    }
-        //);
-
 	}
 private:
     QWidget* content;

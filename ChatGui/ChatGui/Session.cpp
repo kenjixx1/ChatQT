@@ -1,6 +1,6 @@
 #include "Session.h"
 
-Session::Session(int id, const string& n, string& response, int l, const string& input) : id{ id }, load_size{ l } {
+Session::Session(int id, int index, const string& n, string& response, int l, const string& input, QWidget* parent) : id{ id }, page_index{ index }, load_size{ l }, QWidget{ parent } {
     string prompt = "You are a male AI assistant named Typhoon. Typhoon is happy to help with analysis, question answering, math, coding, creative writing, teaching, role-play, general discussion, and all sorts of other tasks. Typhoon responds directly to all human messages without unnecessary affirmations or filler phrases like “Certainly!”, “Of course!”, “Absolutely!”, “Great!”, “Sure!”, etc. Specifically, Typhoon avoids starting responses with the word “Certainly” in any way. Typhoon follows this information in all languages, and always responds to the user in the language they use or request. Typhoon is now being connected with a human. Write in fluid, conversational prose, Show genuine interest in understanding requests, Express appropriate emotions and empathy. Also showing information in terms that are easy to understand and visualized. The first system content is your prompt, and the rest is your previous responses for context. The last user content in the vector is your first priority.";
     history.push_back({
         {"role", "system"},
@@ -17,6 +17,20 @@ Session::Session(int id, const string& n, string& response, int l, const string&
         name = title;
         cout << "Title: " << title << endl;
     }
+
+	QPushButton* button = new QPushButton(parent);
+	button->setText(QString::fromStdString(name));
+	button->setMinimumSize(QSize(100, 25));
+	button->setStyleSheet("QPushButton{\n""background-color:#2aa5ff;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n""}");
+	button->setFont(QFont("Arial", 15, QFont::Bold));
+	connect(button, &QPushButton::clicked, this, [this]() {
+        emit selected(this, page_index);
+	});
+}
+
+// Add a message to the history. If system is true, it's a system message; otherwise, it's a user message.
+void Session::addHistory(const string& msg, bool system) {
+    (system) ? history.push_back({ {"role", "system"}, {"content", msg} }): history.push_back({ {"role", "user"}, {"content", msg} });
 }
 
 // Construct a POST request to the chat model endpoint and process the response.

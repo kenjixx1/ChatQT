@@ -54,9 +54,12 @@ public:
     QProgressBar *progressBar_3;
     QFrame *RightFrame;
     QVBoxLayout *verticalLayout_4;
-    QStackedWidget *StackedChatFrame;
-    QWidget *FirstPage;
+    QStackedWidget *stackedWidget;
+    QWidget *ChatFrame;
     QVBoxLayout *verticalLayout_3;
+    QScrollArea *TestMessageScrollArea;
+    QWidget *scrollAreaWidgetContents_2;
+    QVBoxLayout *verticalLayout_5;
     QWidget *page_4;
     QFrame *SendMessageFrame_2;
     QHBoxLayout *horizontalLayout_2;
@@ -67,7 +70,7 @@ public:
     {
         if (ChatGuiClass->objectName().isEmpty())
             ChatGuiClass->setObjectName(QString::fromUtf8("ChatGuiClass"));
-        ChatGuiClass->resize(928, 783);
+        ChatGuiClass->resize(916, 783);
         ChatGuiClass->setStyleSheet(QString::fromUtf8("QMainWindow{\n"
 "background-color:#191a1b;\n"
 "}\n"
@@ -317,21 +320,34 @@ public:
         verticalLayout_4->setSpacing(6);
         verticalLayout_4->setContentsMargins(11, 11, 11, 11);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
-        verticalLayout_4->setContentsMargins(0, 0, 0, -1);
-        StackedChatFrame = new QStackedWidget(RightFrame);
-        StackedChatFrame->setObjectName(QString::fromUtf8("StackedChatFrame"));
-        FirstPage = new QWidget();
-        FirstPage->setObjectName(QString::fromUtf8("FirstPage"));
-        verticalLayout_3 = new QVBoxLayout(FirstPage);
+        stackedWidget = new QStackedWidget(RightFrame);
+        stackedWidget->setObjectName(QString::fromUtf8("stackedWidget"));
+        ChatFrame = new QWidget();
+        ChatFrame->setObjectName(QString::fromUtf8("ChatFrame"));
+        verticalLayout_3 = new QVBoxLayout(ChatFrame);
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
-        StackedChatFrame->addWidget(FirstPage);
+        TestMessageScrollArea = new QScrollArea(ChatFrame);
+        TestMessageScrollArea->setObjectName(QString::fromUtf8("TestMessageScrollArea"));
+        TestMessageScrollArea->setWidgetResizable(true);
+        scrollAreaWidgetContents_2 = new QWidget();
+        scrollAreaWidgetContents_2->setObjectName(QString::fromUtf8("scrollAreaWidgetContents_2"));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 616, 675));
+        verticalLayout_5 = new QVBoxLayout(scrollAreaWidgetContents_2);
+        verticalLayout_5->setSpacing(6);
+        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_5->setObjectName(QString::fromUtf8("verticalLayout_5"));
+        TestMessageScrollArea->setWidget(scrollAreaWidgetContents_2);
+
+        verticalLayout_3->addWidget(TestMessageScrollArea);
+
+        stackedWidget->addWidget(ChatFrame);
         page_4 = new QWidget();
         page_4->setObjectName(QString::fromUtf8("page_4"));
-        StackedChatFrame->addWidget(page_4);
+        stackedWidget->addWidget(page_4);
 
-        verticalLayout_4->addWidget(StackedChatFrame);
+        verticalLayout_4->addWidget(stackedWidget);
 
         SendMessageFrame_2 = new QFrame(RightFrame);
         SendMessageFrame_2->setObjectName(QString::fromUtf8("SendMessageFrame_2"));
@@ -393,9 +409,6 @@ public:
         ChatGuiClass->setCentralWidget(centralWidget);
 
         retranslateUi(ChatGuiClass);
-
-        StackedChatFrame->setCurrentIndex(0);
-
 
         QMetaObject::connectSlotsByName(ChatGuiClass);
     } // setupUi
