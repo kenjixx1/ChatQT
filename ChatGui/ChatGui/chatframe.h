@@ -33,10 +33,11 @@ public:
         content = new QWidget();
         messagelayout = new QVBoxLayout(content);
         messagelayout->setContentsMargins(11, 11, 11, 11);
-		messagelayout->setAlignment(Qt::AlignTop);
+		messagelayout->setAlignment(Qt::AlignBottom);
         scrollarea->setWidget(content);
         pagelayout->addWidget(scrollarea);
-        QMessageBox::information(nullptr, "H", "Created Frame");
+
+        
 
 
 	}
@@ -60,7 +61,7 @@ public:
         text->setMaximumWidth(scrollarea->width() * 0.8);
         text->setFont(font);
         text->setTextInteractionFlags(Qt::TextBrowserInteraction);
-        text->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+        text->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         text->setStyleSheet(QString::fromUtf8("color:#ffffff;"));
 
         QTimer::singleShot(10, this, [=]() {
