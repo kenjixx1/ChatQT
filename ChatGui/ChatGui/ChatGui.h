@@ -34,10 +34,8 @@ public:
 
 private slots:
    void on_CreateNewButton_clicked();
-   //void ActiveButton_Click();
    void on_DeleteButton_clicked();
    void ClearLayout(QLayout* layout);
-   //void LoadChatHistory();
    void on_SendButton_clicked();
    void AddMessage(QString message,bool sender);
    void on_RenameButton_clicked();
