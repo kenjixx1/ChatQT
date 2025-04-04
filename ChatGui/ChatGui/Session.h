@@ -28,6 +28,9 @@ private:
     int load_size;
     int page_index;
     vector<json> history;
+	QPushButton* button;
+    QString ActiveSS = "QPushButton{\n""background-color:#0c6ee9;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n""}";
+    QString DeactiveSS = "QPushButton{\n""background-color:#2aa5ff;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n""}";
 
 public:
     explicit Session(int id, const string& n, string& response, int l = 0, const string& input = "", QWidget* parent = nullptr);
@@ -38,9 +41,11 @@ public:
     string getAIResponse(const vector<json>& history);
     static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output);
     size_t estimateToken(const vector<json>& history);
+    void changeName(const string& n);
     void trimHistory();
 
-    void changeName(const string& n) { name = n; };
+	void activate() { this->setStyleSheet(ActiveSS); }
+	void deactivate() { this->setStyleSheet(DeactiveSS); }
     int getLoadSize() { return load_size; }
     int getHistorySize() { return history.size() - 1; }
 	int getID() { return id; }

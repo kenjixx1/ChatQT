@@ -67,7 +67,7 @@ void ChatGui::on_CreateNewButton_clicked() {
     ChatFrame* chat = new ChatFrame();
     ui.StackedChatFrame->addWidget(chat->page);
     ui.StackedChatFrame->setCurrentWidget(chat->page);
-    ActiveButton = nullptr;
+    current_session = nullptr;
     CurrentChatFrame = chat;
     CurrentChatFrame->AddFMessage("What Can I help you with?", 0);
     
@@ -78,16 +78,16 @@ void ChatGui::on_CreateNewButton_clicked() {
 
 
 
-void ChatGui::ActiveButton_Click() {
-    QObject* Sender = sender();
-    QPushButton* button = qobject_cast<QPushButton*>(Sender);
-    int id = button->property("ChatId").toInt();
-    //QMessageBox::information(nullptr, "Message", "ID:"+QString::number(id));
-    clist.SetActive(id);
-    ActiveButton = clist.GetButtonByID(id);
-    ClearLayout(ui.verticalLayout_3);
-
-}
+//void ChatGui::ActiveButton_Click() {
+//    QObject* Sender = sender();
+//    QPushButton* button = qobject_cast<QPushButton*>(Sender);
+//    int id = button->property("ChatId").toInt();
+//    //QMessageBox::information(nullptr, "Message", "ID:"+QString::number(id));
+//    clist.SetActive(id);
+//    ActiveButton = clist.GetButtonByID(id);
+//    ClearLayout(ui.verticalLayout_3);
+//
+//}
 
 void ChatGui::ClearLayout(QLayout* layout) {
     QLayoutItem* obj;
@@ -98,22 +98,20 @@ void ChatGui::ClearLayout(QLayout* layout) {
     }
 }
 
-void ChatGui::LoadChatHistory() {
-    ClearLayout(ui.verticalLayout_2);
-    for (int i = 0; i < clist.Size(); i++) {
-        ui.verticalLayout_2->addWidget(clist.GetButton(i),0, Qt::AlignTop);
-    }
-}
-
-
+//void ChatGui::LoadChatHistory() {
+//    ClearLayout(ui.verticalLayout_2);
+//    for (int i = 0; i < clist.Size(); i++) {
+//        ui.verticalLayout_2->addWidget(clist.GetButton(i),0, Qt::AlignTop);
+//    }
+//}
 
 void ChatGui::on_DeleteButton_clicked() {
-    if (ActiveButton != nullptr) {
-        int id = ActiveButton->property("ChatId").toInt();
-        clist.Remove(id);
-        LoadChatHistory();
+    if (current_session != nullptr) {
+        deleteSession();
+        // remove the page
+        
     }
-    ActiveButton = nullptr;
+    current_session = nullptr;
     
 }
 
@@ -155,7 +153,7 @@ void ChatGui::on_SendButton_clicked() {
 }
 
 void ChatGui::on_RenameButton_clicked() {
-    if (ActiveButton != nullptr) {
+    if (current_session != nullptr) {
         QInputDialog* inputDialog = new QInputDialog(this);
         inputDialog->setWindowTitle("Styled Input");
         inputDialog->setLabelText("Chat Name:");
@@ -192,7 +190,7 @@ void ChatGui::on_RenameButton_clicked() {
 
         if (inputDialog->exec() == QDialog::Accepted) {
             QString input = inputDialog->textValue();
-            ActiveButton->setText(input);
+			current_session->changeName(input.toStdString());
         }
     }
 }
@@ -261,9 +259,10 @@ void ChatGui::AddMessage(QString message, bool sender) {
 }
 
 void ChatGui::sessionSelected(Session* session, int page) {
-	current_session = session;
+	current_session->deactivate();
+    current_session = session;
     
-	if (current_session->getLoadSize() < current_session->getHistorySize()) {
+	if (current_session->getLoadSize() > current_session->getHistorySize()) {
 		loadConversation();
 	}
 
@@ -324,7 +323,7 @@ void ChatGui::updateMessages(int id, const string& user, const string& system) {
 }
 
 // Create a new session in the database
-void ChatGui::addSessionRow() {
+int ChatGui::addSessionRow() {
     sqlite3_stmt* stmt;
     const char* sql = "INSERT INTO messages (name, history_size) VALUES (?, 0);";
 
@@ -342,6 +341,8 @@ void ChatGui::addSessionRow() {
     }
 
     sqlite3_finalize(stmt);
+
+	return sqlite3_last_insert_rowid(db); // Get the ID of the last inserted row
 }
 
 // Change the name of a session in the database
@@ -436,6 +437,23 @@ void ChatGui::loadConversation() {
         }
 
 		his_track--;
+	}
+	sqlite3_finalize(stmt);
+}
+
+// Delete a session from the database
+void ChatGui::deleteSession() {
+	sqlite3_stmt* stmt;
+	const char* sql = "DELETE FROM sessions WHERE id = ?;";
+	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+	if (checkQuery(rc)) {
+		sqlite3_finalize(stmt);
+		return;
+	}
+	sqlite3_bind_int(stmt, 1, current_session->getID());
+	rc = sqlite3_step(stmt);
+	if (rc != SQLITE_DONE) {
+		qDebug() << "Failed to delete the session: " << sqlite3_errmsg(db) << endl;
 	}
 	sqlite3_finalize(stmt);
 }
