@@ -47,6 +47,7 @@ public:
     void changeName(const string& n);
     void trimHistory();
 
+	string getName() { return name; }
 	void activate() { this->setStyleSheet(ActiveSS); }
 	void deactivate() { this->setStyleSheet(DeactiveSS); }
     int getLoadSize() { return load_size; }
