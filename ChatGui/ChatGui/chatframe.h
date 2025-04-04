@@ -67,7 +67,7 @@ public:
         QTimer::singleShot(10, this, [=]() {
             if (text->width() > scrollarea->width() * 0.7) 
             {
-                text->setMinimumWidth(scrollarea->width() * 0.5);
+                text->setMinimumWidth(scrollarea->width() * 0.7);
                 text->setWordWrap(true);
             }
             else 
