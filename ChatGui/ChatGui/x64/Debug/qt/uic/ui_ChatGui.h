@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ChatGui.ui'
 **
-** Created by: Qt User Interface Compiler version 5.12.2
+** Created by: Qt User Interface Compiler version 5.12.12
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -19,6 +19,7 @@
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
+#include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -53,11 +54,13 @@ public:
     QProgressBar *progressBar_3;
     QFrame *RightFrame;
     QVBoxLayout *verticalLayout_4;
-    QFrame *ChatFrame;
-    QVBoxLayout *verticalLayout_5;
-    QScrollArea *TestMessageScrollArea;
-    QWidget *scrollAreaWidgetContents;
+    QStackedWidget *stackedWidget;
+    QWidget *ChatFrame;
     QVBoxLayout *verticalLayout_3;
+    QScrollArea *TestMessageScrollArea;
+    QWidget *scrollAreaWidgetContents_2;
+    QVBoxLayout *verticalLayout_5;
+    QWidget *page_4;
     QFrame *SendMessageFrame_2;
     QHBoxLayout *horizontalLayout_2;
     QTextEdit *textEdit;
@@ -131,8 +134,8 @@ public:
 
         frame_3 = new QFrame(LeftFrame);
         frame_3->setObjectName(QString::fromUtf8("frame_3"));
-        frame_3->setMinimumSize(QSize(100, 30));
-        frame_3->setMaximumSize(QSize(16777215, 38));
+        frame_3->setMinimumSize(QSize(100, 43));
+        frame_3->setMaximumSize(QSize(16777215, 43));
         frame_3->setStyleSheet(QString::fromUtf8("background-color: rgb(52, 57, 61);\n"
 "border-radius:15px;"));
         frame_3->setFrameShape(QFrame::StyledPanel);
@@ -157,19 +160,20 @@ public:
 
         frame_4 = new QFrame(LeftFrame);
         frame_4->setObjectName(QString::fromUtf8("frame_4"));
-        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(frame_4->sizePolicy().hasHeightForWidth());
         frame_4->setSizePolicy(sizePolicy);
-        frame_4->setMinimumSize(QSize(100, 25));
+        frame_4->setMinimumSize(QSize(100, 35));
         frame_4->setMaximumSize(QSize(16777215, 35));
         frame_4->setFrameShape(QFrame::StyledPanel);
         frame_4->setFrameShadow(QFrame::Raised);
+        QVBoxLayout* frame_4_layout = new QVBoxLayout(frame_4); // Add a layout to frame_4
+        frame_4_layout->setContentsMargins(0, 0, 0, 0); // Set margins to 0
         CreateNewButton = new QPushButton(frame_4);
         CreateNewButton->setObjectName(QString::fromUtf8("CreateNewButton"));
-        CreateNewButton->setGeometry(QRect(0, 0, 240, 31));
-        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Maximum);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(CreateNewButton->sizePolicy().hasHeightForWidth());
@@ -184,32 +188,7 @@ public:
 "QPushButton::hover{\n"
 "background-color:#0865c5;\n"
 "}"));
-
-            qApp->setStyleSheet(R"(
-QScrollBar:vertical {
-    background: transparent;
-    width: 8px;
-    margin: 0px;
-}
-
-QScrollBar::handle:vertical {
-    background: #0c6ee9;
-    border-radius: 4px;
-    min-height: 20px;
-}
-
-QScrollBar::add-line:vertical,
-QScrollBar::sub-line:vertical {
-    height: 0px;
-}
-
-QScrollBar::add-page:vertical,
-QScrollBar::sub-page:vertical {
-    background: none;
-}
-
-)");
-
+		frame_4_layout->addWidget(CreateNewButton); // Add the button to the layout of frame_4
         verticalLayout->addWidget(frame_4);
 
         progressBar_2 = new QProgressBar(LeftFrame);
@@ -295,7 +274,6 @@ QScrollBar::sub-page:vertical {
         RenameButton->setObjectName(QString::fromUtf8("RenameButton"));
         sizePolicy1.setHeightForWidth(RenameButton->sizePolicy().hasHeightForWidth());
         RenameButton->setSizePolicy(sizePolicy1);
-        RenameButton->setMinimumSize(QSize(100, 25));
         RenameButton->setFont(font1);
         RenameButton->setStyleSheet(QString::fromUtf8("QPushButton{\n"
 "background-color: rgb(0, 133, 255);\n"
@@ -342,34 +320,34 @@ QScrollBar::sub-page:vertical {
         verticalLayout_4->setSpacing(6);
         verticalLayout_4->setContentsMargins(11, 11, 11, 11);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
-        ChatFrame = new QFrame(RightFrame);
+        stackedWidget = new QStackedWidget(RightFrame);
+        stackedWidget->setObjectName(QString::fromUtf8("stackedWidget"));
+        ChatFrame = new QWidget();
         ChatFrame->setObjectName(QString::fromUtf8("ChatFrame"));
-        ChatFrame->setStyleSheet(QString::fromUtf8("background-color: #18191a;"));
-        ChatFrame->setFrameShape(QFrame::StyledPanel);
-        ChatFrame->setFrameShadow(QFrame::Raised);
-        verticalLayout_5 = new QVBoxLayout(ChatFrame);
-        verticalLayout_5->setSpacing(20);
-        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_5->setObjectName(QString::fromUtf8("verticalLayout_5"));
-        TestMessageScrollArea = new QScrollArea(ChatFrame);
-        TestMessageScrollArea->setObjectName(QString::fromUtf8("TestMessageScrollArea"));
-        TestMessageScrollArea->setStyleSheet(QString::fromUtf8(""));
-        TestMessageScrollArea->setWidgetResizable(true);
-        scrollAreaWidgetContents = new QWidget();
-        scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 616, 675));
-        verticalLayout_3 = new QVBoxLayout(scrollAreaWidgetContents);
+        verticalLayout_3 = new QVBoxLayout(ChatFrame);
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
-        verticalLayout_3->setAlignment(Qt::AlignTop);
-        verticalLayout_2->setAlignment(Qt::AlignTop);
-        TestMessageScrollArea->setWidget(scrollAreaWidgetContents);
+        TestMessageScrollArea = new QScrollArea(ChatFrame);
+        TestMessageScrollArea->setObjectName(QString::fromUtf8("TestMessageScrollArea"));
+        TestMessageScrollArea->setWidgetResizable(true);
+        scrollAreaWidgetContents_2 = new QWidget();
+        scrollAreaWidgetContents_2->setObjectName(QString::fromUtf8("scrollAreaWidgetContents_2"));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 616, 675));
+        verticalLayout_5 = new QVBoxLayout(scrollAreaWidgetContents_2);
+        verticalLayout_5->setSpacing(6);
+        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_5->setObjectName(QString::fromUtf8("verticalLayout_5"));
+        TestMessageScrollArea->setWidget(scrollAreaWidgetContents_2);
 
-        verticalLayout_5->addWidget(TestMessageScrollArea);
+        verticalLayout_3->addWidget(TestMessageScrollArea);
 
+        stackedWidget->addWidget(ChatFrame);
+        page_4 = new QWidget();
+        page_4->setObjectName(QString::fromUtf8("page_4"));
+        stackedWidget->addWidget(page_4);
 
-        verticalLayout_4->addWidget(ChatFrame);
+        verticalLayout_4->addWidget(stackedWidget);
 
         SendMessageFrame_2 = new QFrame(RightFrame);
         SendMessageFrame_2->setObjectName(QString::fromUtf8("SendMessageFrame_2"));
@@ -438,7 +416,7 @@ QScrollBar::sub-page:vertical {
     void retranslateUi(QMainWindow *ChatGuiClass)
     {
         ChatGuiClass->setWindowTitle(QApplication::translate("ChatGuiClass", "ChatGui", nullptr));
-        label->setText(QApplication::translate("ChatGuiClass", "ChatQT", nullptr));
+        label->setText(QApplication::translate("ChatGuiClass", "ChatQT AI", nullptr));
         label_2->setText(QApplication::translate("ChatGuiClass", "Chats", nullptr));
         CreateNewButton->setText(QApplication::translate("ChatGuiClass", "+ New Chat  ", nullptr));
         DeleteButton->setText(QString());

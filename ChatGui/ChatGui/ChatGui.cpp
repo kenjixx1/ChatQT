@@ -388,6 +388,10 @@ void ChatGui::loadSessions() {
 		int id = sqlite3_column_int(stmt, 0);
 		const char* name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
 		int history_size = sqlite3_column_int(stmt, 2);
+
+        string temp;
+		sessions.push_back(new Session(id, name, temp, history_size)); // Will add parent widget later
+
 		// Add sessions and connect
 	}
 	sqlite3_finalize(stmt);
@@ -439,6 +443,7 @@ int ChatGui::countMessages() {
 	return count;
 }
 
+// Check if the query was successful
 bool ChatGui::checkQuery(int rc) {
 	if (rc != SQLITE_OK) {
 		qDebug() << "SQL error:" << sqlite3_errmsg(db);
@@ -447,6 +452,7 @@ bool ChatGui::checkQuery(int rc) {
 	return true;
 }
 
+// Create a table in the database
 void ChatGui::createTable(int rc, const char* sql) {
 	rc = sqlite3_exec(db, sql, nullptr, 0, &errMsg);
 	if (rc != SQLITE_OK) {
