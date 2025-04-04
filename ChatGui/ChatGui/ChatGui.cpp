@@ -100,18 +100,6 @@ void ChatGui::on_CreateNewButton_clicked() {
     
 }
 
-
-//void ChatGui::ActiveButton_Click() {
-//    QObject* Sender = sender();
-//    QPushButton* button = qobject_cast<QPushButton*>(Sender);
-//    int id = button->property("ChatId").toInt();
-//    //QMessageBox::information(nullptr, "Message", "ID:"+QString::number(id));
-//    clist.SetActive(id);
-//    ActiveButton = clist.GetButtonByID(id);
-//    ClearLayout(ui.verticalLayout_3);
-//
-//}
-
 void ChatGui::ClearLayout(QLayout* layout) {
     QLayoutItem* obj;
     while ((obj = layout->takeAt(0)) != nullptr) {
@@ -120,13 +108,6 @@ void ChatGui::ClearLayout(QLayout* layout) {
         }
     }
 }
-
-//void ChatGui::LoadChatHistory() {
-//    ClearLayout(ui.verticalLayout_2);
-//    for (int i = 0; i < clist.Size(); i++) {
-//        ui.verticalLayout_2->addWidget(clist.GetButton(i),0, Qt::AlignTop);
-//    }
-//}
 
 void ChatGui::on_DeleteButton_clicked() {
     if (current_session != nullptr) {
@@ -229,6 +210,20 @@ void ChatGui::AddMessage(QString message, bool sender) {
 	CurrentChatFrame->AddFMessage(message, sender);
 }
 
+int ChatGui::getCurrentIndex() {
+	if (current_session == nullptr) {
+		return 0;
+	}
+
+    int index{ 0 };
+	for (const auto& session : sessions) {
+        index++;
+		if (session->getID() == current_session->getID()) {
+			return index;
+		}
+	}
+}
+
 void ChatGui::sessionSelected(Session* session, int page) {
 	current_session->deactivate();
     current_session = session;
@@ -301,7 +296,7 @@ int ChatGui::addSessionRow() {
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if (checkQuery(rc)) {
         sqlite3_finalize(stmt);
-        return;
+        return 0;
     }
 
     sqlite3_bind_text(stmt, 1, "", -1, SQLITE_STATIC);
@@ -377,7 +372,9 @@ void ChatGui::loadSessions() {
 		int history_size = sqlite3_column_int(stmt, 2);
 
         string temp;
-		sessions.push_back(new Session(id, name, temp, history_size)); // Will add parent widget later
+		Session* session = new Session(id, name, temp, history_size, "", ui.scrollAreaWidgetContents_3);
+		connect(session, &Session::selected, this, &ChatGui::sessionSelected);
+        sessions.push_back(session); 
 
 		// Add sessions and connect
 	}
