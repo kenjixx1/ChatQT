@@ -25,7 +25,7 @@ public:
 	explicit ChatFrame(QWidget* parent = nullptr) {
 
         page = new QWidget();
-        pagelayout = new QVBoxLayout(page);
+        pagelayout = new QVBoxLayout(this);
         pagelayout->setSpacing(6);
         pagelayout->setContentsMargins(11, 11, 11, 11);
         scrollarea = new QScrollArea(page);

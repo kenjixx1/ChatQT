@@ -19,8 +19,8 @@ ChatGui::ChatGui(QWidget *parent)
     ui.setupUi(this);
     ui.verticalLayout_2->setAlignment(Qt::AlignTop);
     ChatFrame* FirstPage = new ChatFrame();
-    ui.StackedChatFrame->addWidget(FirstPage->page);
-    ui.StackedChatFrame->setCurrentWidget(FirstPage->page);
+    ui.StackedChatFrame->addWidget(FirstPage);
+    ui.StackedChatFrame->setCurrentWidget(FirstPage);
     CurrentChatFrame = FirstPage;
     CurrentChatFrame->AddFMessage("What can I help you with?", 0);
 	current_session = nullptr; 
@@ -115,8 +115,8 @@ ChatGui::~ChatGui()
 
 void ChatGui::on_CreateNewButton_clicked() {
     ChatFrame* chat = new ChatFrame();
-    ui.StackedChatFrame->addWidget(chat->page);
-    ui.StackedChatFrame->setCurrentWidget(chat->page);
+    ui.StackedChatFrame->addWidget(chat);
+    ui.StackedChatFrame->setCurrentWidget(chat);
     current_session = nullptr;
     CurrentChatFrame = chat;
     CurrentChatFrame->AddFMessage("What Can I help you with?", 0);
@@ -139,11 +139,11 @@ void ChatGui::on_DeleteButton_clicked() {
     if (current_session != nullptr) {
         deleteSession();
         // remove the page
-        ui.StackedChatFrame->removeWidget(CurrentChatFrame->page);
+        ui.StackedChatFrame->removeWidget(CurrentChatFrame);
 		    delete CurrentChatFrame;
         ChatFrame* newpage = new ChatFrame();
-        ui.StackedChatFrame->addWidget(newpage->page);
-        ui.StackedChatFrame->setCurrentWidget(newpage->page);
+        ui.StackedChatFrame->addWidget(newpage);
+        ui.StackedChatFrame->setCurrentWidget(newpage);
         CurrentChatFrame = newpage;
         CurrentChatFrame->AddFMessage("What can I help you with?", 0);
     }
