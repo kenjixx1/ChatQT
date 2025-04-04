@@ -37,6 +37,31 @@ ChatGui::ChatGui(QWidget *parent)
 		rc = sqlite3_open(dbPath, &db);
     }
 
+        qApp->setStyleSheet(R"(
+QScrollBar:vertical {
+    background: transparent;
+    width: 8px;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background: #0c6ee9;
+    border-radius: 4px;
+    min-height: 20px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+)");
+
 
 
 
