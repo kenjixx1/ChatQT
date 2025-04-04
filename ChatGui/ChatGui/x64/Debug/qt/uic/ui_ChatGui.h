@@ -188,7 +188,7 @@ public:
 "QPushButton::hover{\n"
 "background-color:#0865c5;\n"
 "}"));
-		frame_4_layout->addWidget(CreateNewButton); // Add the button to the layout of frame_4
+        frame_4_layout->addWidget(CreateNewButton); // Add the button to the layout of frame_4
         verticalLayout->addWidget(frame_4);
 
         progressBar_2 = new QProgressBar(LeftFrame);
