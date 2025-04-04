@@ -29,55 +29,55 @@ QT_BEGIN_NAMESPACE
 class Ui_ChatGuiClass
 {
 public:
-    QWidget *centralWidget;
-    QHBoxLayout *horizontalLayout;
-    QFrame *LeftFrame;
-    QVBoxLayout *verticalLayout;
-    QFrame *FChatQt;
-    QHBoxLayout *horizontalLayout_6;
-    QLabel *label;
-    QProgressBar *progressBar_5;
-    QFrame *frame_3;
-    QHBoxLayout *horizontalLayout_5;
-    QLabel *label_2;
-    QFrame *frame_4;
-    QPushButton *CreateNewButton;
-    QProgressBar *progressBar_2;
-    QScrollArea *ChatHistoryFrame;
-    QWidget *scrollAreaWidgetContents_3;
-    QVBoxLayout *verticalLayout_2;
-    QProgressBar *progressBar;
-    QFrame *frame;
-    QHBoxLayout *horizontalLayout_3;
-    QPushButton *DeleteButton;
-    QPushButton *RenameButton;
-    QProgressBar *progressBar_3;
-    QFrame *RightFrame;
-    QVBoxLayout *verticalLayout_4;
-    QStackedWidget *StackedChatFrame;
-    QWidget *ChatFrame;
-    QVBoxLayout *verticalLayout_3;
-    QScrollArea *TestMessageScrollArea;
-    QWidget *scrollAreaWidgetContents_2;
-    QVBoxLayout *verticalLayout_5;
-    QWidget *page_4;
-    QFrame *SendMessageFrame_2;
-    QHBoxLayout *horizontalLayout_2;
-    QTextEdit *textEdit;
-    QPushButton *SendButton;
+    QWidget* centralWidget;
+    QHBoxLayout* horizontalLayout;
+    QFrame* LeftFrame;
+    QVBoxLayout* verticalLayout;
+    QFrame* FChatQt;
+    QHBoxLayout* horizontalLayout_6;
+    QLabel* label;
+    QProgressBar* progressBar_5;
+    QFrame* frame_3;
+    QHBoxLayout* horizontalLayout_5;
+    QLabel* label_2;
+    QFrame* frame_4;
+    QPushButton* CreateNewButton;
+    QProgressBar* progressBar_2;
+    QScrollArea* ChatHistoryFrame;
+    QWidget* scrollAreaWidgetContents_3;
+    QVBoxLayout* verticalLayout_2;
+    QProgressBar* progressBar;
+    QFrame* frame;
+    QHBoxLayout* horizontalLayout_3;
+    QPushButton* DeleteButton;
+    QPushButton* RenameButton;
+    QProgressBar* progressBar_3;
+    QFrame* RightFrame;
+    QVBoxLayout* verticalLayout_4;
+    QStackedWidget* StackedChatFrame;
+    QWidget* ChatFrame;
+    QVBoxLayout* verticalLayout_3;
+    QScrollArea* TestMessageScrollArea;
+    QWidget* scrollAreaWidgetContents_2;
+    QVBoxLayout* verticalLayout_5;
+    QWidget* page_4;
+    QFrame* SendMessageFrame_2;
+    QHBoxLayout* horizontalLayout_2;
+    QTextEdit* textEdit;
+    QPushButton* SendButton;
 
-    void setupUi(QMainWindow *ChatGuiClass)
+    void setupUi(QMainWindow* ChatGuiClass)
     {
         if (ChatGuiClass->objectName().isEmpty())
             ChatGuiClass->setObjectName(QString::fromUtf8("ChatGuiClass"));
         ChatGuiClass->resize(916, 783);
         ChatGuiClass->setStyleSheet(QString::fromUtf8("QMainWindow{\n"
-"background-color:#191a1b;\n"
-"}\n"
-"\n"
-"QWidget{\n"
-"background-color:#191a1b;\n"
-"}"));
+            "background-color:#191a1b;\n"
+            "}\n"
+            "\n"
+            "QWidget{\n"
+            "background-color:#191a1b;\n"
+            "}"));
         centralWidget = new QWidget(ChatGuiClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -88,7 +88,7 @@ public:
         LeftFrame->setObjectName(QString::fromUtf8("LeftFrame"));
         LeftFrame->setMaximumSize(QSize(240, 16777215));
         LeftFrame->setStyleSheet(QString::fromUtf8("background-color: rgb(32, 33, 36);\n"
-"border-radius:15px;"));
+            "border-radius:15px;"));
         LeftFrame->setFrameShape(QFrame::StyledPanel);
         LeftFrame->setFrameShadow(QFrame::Raised);
         verticalLayout = new QVBoxLayout(LeftFrame);
@@ -111,7 +111,7 @@ public:
         font.setPointSize(24);
         label->setFont(font);
         label->setStyleSheet(QString::fromUtf8("\n"
-"color: rgb(0, 133, 255);"));
+            "color: rgb(0, 133, 255);"));
 
         horizontalLayout_6->addWidget(label, 0, Qt::AlignHCenter);
 
@@ -122,11 +122,11 @@ public:
         progressBar_5->setObjectName(QString::fromUtf8("progressBar_5"));
         progressBar_5->setMaximumSize(QSize(16777215, 3));
         progressBar_5->setStyleSheet(QString::fromUtf8("\n"
-"\n"
-"QProgressBar::chunk {\n"
-"  background-color: #384456;\n"
-"}\n"
-""));
+            "\n"
+            "QProgressBar::chunk {\n"
+            "  background-color: #384456;\n"
+            "}\n"
+            ""));
         progressBar_5->setValue(100);
         progressBar_5->setTextVisible(false);
 
@@ -134,10 +134,10 @@ public:
 
         frame_3 = new QFrame(LeftFrame);
         frame_3->setObjectName(QString::fromUtf8("frame_3"));
-        frame_3->setMinimumSize(QSize(100, 30));
-        frame_3->setMaximumSize(QSize(16777215, 38));
+        frame_3->setMinimumSize(QSize(100, 40));
+        frame_3->setMaximumSize(QSize(16777215, 40));
         frame_3->setStyleSheet(QString::fromUtf8("background-color: rgb(52, 57, 61);\n"
-"border-radius:15px;"));
+            "border-radius:15px;"));
         frame_3->setFrameShape(QFrame::StyledPanel);
         frame_3->setFrameShadow(QFrame::Raised);
         horizontalLayout_5 = new QHBoxLayout(frame_3);
@@ -165,10 +165,12 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(frame_4->sizePolicy().hasHeightForWidth());
         frame_4->setSizePolicy(sizePolicy);
-        frame_4->setMinimumSize(QSize(100, 25));
+        frame_4->setMinimumSize(QSize(100, 35));
         frame_4->setMaximumSize(QSize(16777215, 35));
         frame_4->setFrameShape(QFrame::StyledPanel);
         frame_4->setFrameShadow(QFrame::Raised);
+        QVBoxLayout* frame_4_layout = new QVBoxLayout(frame_4); // Add a layout to frame_4
+        frame_4_layout->setContentsMargins(0, 0, 0, 0); // Set margins to 0
         CreateNewButton = new QPushButton(frame_4);
         CreateNewButton->setObjectName(QString::fromUtf8("CreateNewButton"));
         CreateNewButton->setGeometry(QRect(0, 0, 240, 31));
@@ -180,25 +182,26 @@ public:
         CreateNewButton->setMinimumSize(QSize(100, 25));
         CreateNewButton->setFont(font1);
         CreateNewButton->setStyleSheet(QString::fromUtf8("QPushButton{\n"
-"background-color: rgb(0, 133, 255);\n"
-"color: rgb(255, 255, 255);\n"
-"border-radius:15px;\n"
-"}\n"
-"QPushButton::hover{\n"
-"background-color:#0865c5;\n"
-"}"));
+            "background-color: rgb(0, 133, 255);\n"
+            "color: rgb(255, 255, 255);\n"
+            "border-radius:15px;\n"
+            "}\n"
+            "QPushButton::hover{\n"
+            "background-color:#0865c5;\n"
+            "}"));
 
+        frame_4_layout->addWidget(CreateNewButton); // Add the button to the layout of frame_4
         verticalLayout->addWidget(frame_4);
 
         progressBar_2 = new QProgressBar(LeftFrame);
         progressBar_2->setObjectName(QString::fromUtf8("progressBar_2"));
         progressBar_2->setMaximumSize(QSize(16777215, 3));
         progressBar_2->setStyleSheet(QString::fromUtf8("\n"
-"\n"
-"QProgressBar::chunk {\n"
-"  background-color: #384456;\n"
-"}\n"
-""));
+            "\n"
+            "QProgressBar::chunk {\n"
+            "  background-color: #384456;\n"
+            "}\n"
+            ""));
         progressBar_2->setValue(100);
         progressBar_2->setTextVisible(false);
 
@@ -229,11 +232,11 @@ public:
         progressBar->setObjectName(QString::fromUtf8("progressBar"));
         progressBar->setMaximumSize(QSize(16777215, 3));
         progressBar->setStyleSheet(QString::fromUtf8("\n"
-"\n"
-"QProgressBar::chunk {\n"
-"  background-color: #384456;\n"
-"}\n"
-""));
+            "\n"
+            "QProgressBar::chunk {\n"
+            "  background-color: #384456;\n"
+            "}\n"
+            ""));
         progressBar->setValue(100);
         progressBar->setTextVisible(false);
 
@@ -255,13 +258,13 @@ public:
         sizePolicy3.setHeightForWidth(DeleteButton->sizePolicy().hasHeightForWidth());
         DeleteButton->setSizePolicy(sizePolicy3);
         DeleteButton->setStyleSheet(QString::fromUtf8("QPushButton{\n"
-"background-color: rgb(0, 133, 255);\n"
-"color: rgb(255, 255, 255);\n"
-"border-radius:15px;\n"
-"}\n"
-"QPushButton::hover{\n"
-"background-color:#0865c5;\n"
-"}"));
+            "background-color: rgb(0, 133, 255);\n"
+            "color: rgb(255, 255, 255);\n"
+            "border-radius:15px;\n"
+            "}\n"
+            "QPushButton::hover{\n"
+            "background-color:#0865c5;\n"
+            "}"));
         QIcon icon;
         icon.addFile(QString::fromUtf8(":/ChatGui/Icon/trash-2.svg"), QSize(), QIcon::Normal, QIcon::On);
         DeleteButton->setIcon(icon);
@@ -273,16 +276,15 @@ public:
         RenameButton->setObjectName(QString::fromUtf8("RenameButton"));
         sizePolicy1.setHeightForWidth(RenameButton->sizePolicy().hasHeightForWidth());
         RenameButton->setSizePolicy(sizePolicy1);
-        RenameButton->setMinimumSize(QSize(100, 25));
         RenameButton->setFont(font1);
         RenameButton->setStyleSheet(QString::fromUtf8("QPushButton{\n"
-"background-color: rgb(0, 133, 255);\n"
-"color: rgb(255, 255, 255);\n"
-"border-radius:15px;\n"
-"}\n"
-"QPushButton::hover{\n"
-"background-color:#0865c5;\n"
-"}"));
+            "background-color: rgb(0, 133, 255);\n"
+            "color: rgb(255, 255, 255);\n"
+            "border-radius:15px;\n"
+            "}\n"
+            "QPushButton::hover{\n"
+            "background-color:#0865c5;\n"
+            "}"));
         QIcon icon1;
         icon1.addFile(QString::fromUtf8(":/ChatGui/Icon/pen (1).png"), QSize(), QIcon::Normal, QIcon::On);
         RenameButton->setIcon(icon1);
@@ -297,11 +299,11 @@ public:
         progressBar_3->setObjectName(QString::fromUtf8("progressBar_3"));
         progressBar_3->setMaximumSize(QSize(16777215, 3));
         progressBar_3->setStyleSheet(QString::fromUtf8("\n"
-"\n"
-"QProgressBar::chunk {\n"
-"  background-color: #384456;\n"
-"}\n"
-""));
+            "\n"
+            "QProgressBar::chunk {\n"
+            "  background-color: #384456;\n"
+            "}\n"
+            ""));
         progressBar_3->setValue(100);
         progressBar_3->setTextVisible(false);
 
@@ -313,7 +315,7 @@ public:
         RightFrame = new QFrame(centralWidget);
         RightFrame->setObjectName(QString::fromUtf8("RightFrame"));
         RightFrame->setStyleSheet(QString::fromUtf8("background-color:#18191a;\n"
-"border-radius:15px;"));
+            "border-radius:15px;"));
         RightFrame->setFrameShape(QFrame::StyledPanel);
         RightFrame->setFrameShadow(QFrame::Raised);
         verticalLayout_4 = new QVBoxLayout(RightFrame);
@@ -377,8 +379,8 @@ public:
         font2.setPointSize(12);
         textEdit->setFont(font2);
         textEdit->setStyleSheet(QString::fromUtf8("background-color:#1f2023;\n"
-"color: rgb(255, 255, 255);\n"
-"border-radius:12px;"));
+            "color: rgb(255, 255, 255);\n"
+            "border-radius:12px;"));
 
         horizontalLayout_2->addWidget(textEdit);
 
@@ -386,13 +388,13 @@ public:
         SendButton->setObjectName(QString::fromUtf8("SendButton"));
         SendButton->setMinimumSize(QSize(30, 30));
         SendButton->setStyleSheet(QString::fromUtf8("QPushButton{\n"
-"background-color:#0085ff;\n"
-"border-radius:15px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"background-color:#0865c5;\n"
-"}"));
+            "background-color:#0085ff;\n"
+            "border-radius:15px;\n"
+            "}\n"
+            "\n"
+            "QPushButton::hover{\n"
+            "background-color:#0865c5;\n"
+            "}"));
         QIcon icon2;
         icon2.addFile(QString::fromUtf8(":/ChatGui/Icon/send.svg"), QSize(), QIcon::Normal, QIcon::On);
         SendButton->setIcon(icon2);
@@ -413,7 +415,7 @@ public:
         QMetaObject::connectSlotsByName(ChatGuiClass);
     } // setupUi
 
-    void retranslateUi(QMainWindow *ChatGuiClass)
+    void retranslateUi(QMainWindow* ChatGuiClass)
     {
         ChatGuiClass->setWindowTitle(QApplication::translate("ChatGuiClass", "ChatGui", nullptr));
         label->setText(QApplication::translate("ChatGuiClass", "ChatQT", nullptr));
@@ -427,7 +429,7 @@ public:
 };
 
 namespace Ui {
-    class ChatGuiClass: public Ui_ChatGuiClass {};
+    class ChatGuiClass : public Ui_ChatGuiClass {};
 } // namespace Ui
 
 QT_END_NAMESPACE
