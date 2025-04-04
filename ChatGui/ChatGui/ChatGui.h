@@ -41,7 +41,6 @@ private slots:
    void on_RenameButton_clicked();
 
 private:
-
    QString DeactiveSS;
    Ui::ChatGuiClass ui;
    vector<Session*> sessions;
@@ -49,4 +48,5 @@ private:
    sqlite3* db;
    char* errMsg = 0;
    ChatFrame* CurrentChatFrame;
+   ChatFrame* DefaultChatFrame;
 };
