@@ -19,7 +19,7 @@ public:
 
    void createDataBase(int rc);
    void updateMessages(int id, const string& user, const string& system);
-   void addSessionRow();
+   int addSessionRow();
    void updateSessionName(int id, const string& name);
    void updateHistorySize(int id, int size);
    bool checkQuery(int rc);
@@ -28,6 +28,7 @@ public:
    void sessionSelected(Session* session, int page);
    void loadSessions();
    void loadConversation();
+   void deleteSession();
    int countMessages();
 
 private slots:
@@ -41,9 +42,9 @@ private slots:
    void on_RenameButton_clicked();
 
 private:
-   QPushButton* ActiveButton;
+   //QPushButton* ActiveButton;
    QString DeactiveSS;
-   ChatList clist;
+   //ChatList clist;
    Ui::ChatGuiClass ui;
    vector<Session*> sessions;
    Session* current_session;
