@@ -44,8 +44,8 @@ private:
    QString DeactiveSS;
    ChatList clist;
    Ui::ChatGuiClass ui;
+   vector<Session*> sessions;
    Session* current_session;
-   int session_quantity;
    sqlite3* db;
    char* errMsg = 0;
 };
