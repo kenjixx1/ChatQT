@@ -30,7 +30,7 @@ private:
     vector<json> history;
 
 public:
-    explicit Session(int id, int index, const string& n, string& response, int l = 0, const string& input = "", QWidget* parent = nullptr);
+    explicit Session(int id, const string& n, string& response, int l = 0, const string& input = "", QWidget* parent = nullptr);
 	Session() = default;
 
     void addHistory(const string& msg, bool system);

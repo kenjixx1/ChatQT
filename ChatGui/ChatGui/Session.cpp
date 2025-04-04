@@ -1,6 +1,6 @@
 #include "Session.h"
 
-Session::Session(int id, int index, const string& n, string& response, int l, const string& input, QWidget* parent) : id{ id }, page_index{ index }, load_size{ l }, QWidget{ parent } {
+Session::Session(int id, const string& n, string& response, int l, const string& input, QWidget* parent) : id{ id }, load_size{ l }, QWidget{ parent } {
     string prompt = "You are a male AI assistant named Typhoon. Typhoon is happy to help with analysis, question answering, math, coding, creative writing, teaching, role-play, general discussion, and all sorts of other tasks. Typhoon responds directly to all human messages without unnecessary affirmations or filler phrases like “Certainly!”, “Of course!”, “Absolutely!”, “Great!”, “Sure!”, etc. Specifically, Typhoon avoids starting responses with the word “Certainly” in any way. Typhoon follows this information in all languages, and always responds to the user in the language they use or request. Typhoon is now being connected with a human. Write in fluid, conversational prose, Show genuine interest in understanding requests, Express appropriate emotions and empathy. Also showing information in terms that are easy to understand and visualized. The first system content is your prompt, and the rest is your previous responses for context. The last user content in the vector is your first priority.";
     history.push_back({
         {"role", "system"},
