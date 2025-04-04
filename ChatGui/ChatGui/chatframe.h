@@ -16,6 +16,7 @@
 #include <qscrollarea.h>
 
 
+
 //
 class ChatFrame :public QWidget {
     Q_OBJECT
@@ -49,7 +50,7 @@ public:
         TextFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
         TextFrame->setStyleSheet(QString::fromUtf8("background-color:#1f2023;"));
         TextFrame->setFrameShape(QFrame::StyledPanel);
-
+		
         QHBoxLayout* TextLayout = new QHBoxLayout(TextFrame);
         TextLayout->setSpacing(6);
         TextLayout->setContentsMargins(10, 10, 10, 10);
@@ -57,18 +58,49 @@ public:
         QFont font;
         font.setPointSize(14);
 
-        QLabel* text = new QLabel(message);
+        QFontMetrics fm(font);
+        QStringList words = message.split(' ');
+        QString result;
+        QString currentLine;
+
+        for (const QString& word : words) {
+            QString testLine = currentLine.isEmpty() ? word : currentLine + " " + word;
+            if (fm.width(testLine) <= scrollarea->width() * 0.8) {
+                currentLine = testLine;
+            }
+            else {
+                if (!currentLine.isEmpty()) {
+                    result += currentLine + "\n";
+                }
+                currentLine = word;
+            }
+        }
+
+        if (!currentLine.isEmpty()) {
+            result += currentLine;
+        }
+
+
+		
+
+
+        QLabel* text = new QLabel(result);
         text->setMaximumWidth(scrollarea->width() * 0.8);
         text->setFont(font);
         text->setTextInteractionFlags(Qt::TextBrowserInteraction);
         text->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         text->setStyleSheet(QString::fromUtf8("color:#ffffff;"));
+        
+        
+		int lineCount = text->text().count('\n') + 1;
+		
 
         QTimer::singleShot(10, this, [=]() {
+ 
             if (text->width() > scrollarea->width() * 0.7) 
             {
                 text->setMinimumWidth(scrollarea->width() * 0.7);
-                text->setWordWrap(true);
+                text->setWordWrap(false);
             }
             else 
             {
@@ -78,6 +110,7 @@ public:
 
         if (sender) {
             TextLayout->addWidget(text,0,Qt::AlignCenter);
+    
             messagelayout->addWidget(TextFrame, 0, Qt::AlignRight);
         }
         else {
@@ -100,6 +133,11 @@ private:
 
 public:
     QWidget* page;
+
+	void operator=(QWidget* other) {
+		this->page = other;
+
+	}
 };
 
 
