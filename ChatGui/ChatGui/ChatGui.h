@@ -43,6 +43,7 @@ private slots:
    void on_RenameButton_clicked();
 
 private:
+
    QString DeactiveSS;
    Ui::ChatGuiClass ui;
    vector<Session*> sessions;

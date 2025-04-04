@@ -437,7 +437,7 @@ border-radius:15px;</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QStackedWidget" name="stackedWidget">
+        <widget class="QStackedWidget" name="StackedChatFrame">
          <widget class="QWidget" name="ChatFrame">
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>

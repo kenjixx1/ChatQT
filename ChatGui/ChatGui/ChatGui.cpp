@@ -95,7 +95,8 @@ void ChatGui::on_CreateNewButton_clicked() {
     current_session = nullptr;
     CurrentChatFrame = chat;
     CurrentChatFrame->AddFMessage("What Can I help you with?", 0);
-    
+    string res;
+	
     //AddMessage("What can I help you with?", 0);
     
 }
@@ -127,19 +128,22 @@ void ChatGui::on_DeleteButton_clicked() {
 
 void ChatGui::on_SendButton_clicked() {
     //Binding Button
-    if (ActiveButton == nullptr) {
+    if (current_session == nullptr) {
         QFont font1;
         font1.setPointSize(15);
         font1.setBold(true);
         font1.setWeight(75);
         Session* TempTest;
         string something;
-        TempTest = new Session(0,"Kenji",something,0,"",ui.scrollAreaWidgetContents_3);
-        /*TempTest->setFont(font1);
-        TempTest->setStyleSheet(DeactiveSS);*/
-        /*TempTest->setMinimumSize(QSize(100, 25));*/
-
+        TempTest = new Session(sessions.size(), "Kenji", something, 0, "", ui.scrollAreaWidgetContents_3);
+        connect(TempTest, &Session::selected, this, &ChatGui::sessionSelected);
         ui.verticalLayout_2->addWidget(TempTest, 0, Qt::AlignTop);
+		sessions.push_back(TempTest);
+        connect(TempTest->button, &QPushButton::clicked, this, [=]() {
+            // Handle button click
+            sessionSelected(TempTest, 0);
+            });
+		current_session = TempTest;
 
         /*connect(TempTest, &QPushButton::clicked, this, &::ChatGui::ActiveButton_Click);
         int size = clist.Size();
@@ -225,8 +229,10 @@ int ChatGui::getCurrentIndex() {
 }
 
 void ChatGui::sessionSelected(Session* session, int page) {
-	current_session->deactivate();
+	//current_session->deactivate();
     current_session = session;
+    ui.StackedChatFrame->setCurrentIndex(getCurrentIndex()+1);
+    
     
 	if (current_session->getLoadSize() > current_session->getHistorySize()) {
 		loadConversation();

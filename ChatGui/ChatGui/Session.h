@@ -7,6 +7,8 @@
 #include <nlohmann/json.hpp>
 #include <qwidget.h>
 #include <qpushbutton.h>
+#include "qboxlayout.h"
+#include <qmessagebox.h>
 
 using std::string;
 using std::vector;
@@ -28,11 +30,12 @@ private:
     int load_size;
     int page_index;
     vector<json> history;
-	QPushButton* button;
+	
     QString ActiveSS = "QPushButton{\n""background-color:#0c6ee9;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n""}";
     QString DeactiveSS = "QPushButton{\n""background-color:#2aa5ff;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n""}";
 
 public:
+    QPushButton* button;
     explicit Session(int id, const string& n, string& response, int l = 0, const string& input = "", QWidget* parent = nullptr);
 	Session() = default;
 
