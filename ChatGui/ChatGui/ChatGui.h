@@ -17,6 +17,7 @@ public:
    ChatGui(QWidget *parent = nullptr);
    ~ChatGui();
 
+   int getCurrentIndex();
    void createDataBase(int rc);
    void updateMessages(int id, const string& user, const string& system);
    int addSessionRow();
@@ -42,9 +43,7 @@ private slots:
    void on_RenameButton_clicked();
 
 private:
-   //QPushButton* ActiveButton;
    QString DeactiveSS;
-   //ChatList clist;
    Ui::ChatGuiClass ui;
    vector<Session*> sessions;
    Session* current_session;
