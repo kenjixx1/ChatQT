@@ -160,15 +160,23 @@ void ChatGui::on_SendButton_clicked() {
         font1.setWeight(75);
         Session* TempTest;
         string something;
-        TempTest = new Session(sessions.size(), "Kenji", something, 0, "", ui.scrollAreaWidgetContents_3);
+        TempTest = new Session(sessions.size(), "", something, 0, ui.textEdit->toPlainText().toStdString(), ui.scrollAreaWidgetContents_3);
         connect(TempTest, &Session::selected, this, &ChatGui::sessionSelected);
         ui.verticalLayout_2->addWidget(TempTest, 0, Qt::AlignTop);
+        QString message = ui.textEdit->toPlainText();
+        if (!message.isEmpty()) {
+            CurrentChatFrame->AddFMessage(message, 1);
+            ui.textEdit->clear();
+            ui.textEdit->setFocus();
+        }
+        AddMessage(QString::fromStdString(something), 0);
 		sessions.push_back(TempTest);
         connect(TempTest->button, &QPushButton::clicked, this, [=]() {
             // Handle button click
             sessionSelected(TempTest, 0);
-            });
+        });
 		current_session = TempTest;
+		QMessageBox::information(nullptr, "Message", QString::fromStdString(something));
 
         /*connect(TempTest, &QPushButton::clicked, this, &::ChatGui::ActiveButton_Click);
         int size = clist.Size();
@@ -181,12 +189,6 @@ void ChatGui::on_SendButton_clicked() {
         clist.SetActive(id);*/
 
 
-    }
-    QString message = ui.textEdit->toPlainText();
-    if (!message.isEmpty()) {
-        CurrentChatFrame->AddFMessage(message, 1);
-        ui.textEdit->clear();
-        ui.textEdit->setFocus();
     }
     
 }
