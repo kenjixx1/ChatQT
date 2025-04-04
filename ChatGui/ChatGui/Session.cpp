@@ -18,12 +18,13 @@ Session::Session(int id, const string& n, string& response, int l, const string&
         cout << "Title: " << title << endl;
     }
 
-	QPushButton* button = new QPushButton(parent);
+	button = new QPushButton(parent);
 	button->setText(QString::fromStdString(name));
 	button->setMinimumSize(QSize(100, 25));
 	button->setStyleSheet("QPushButton{\n""background-color:#2aa5ff;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n""}");
 	button->setFont(QFont("Arial", 15, QFont::Bold));
 	connect(button, &QPushButton::clicked, this, [this]() {
+		activate();
         emit selected(this, page_index);
 	});
 }
@@ -123,6 +124,12 @@ void Session::trimHistory() {
     while (estimateToken(history) > MAX_TOKEN - SAFE_MARGIN && history.size() > 2) {
         history.erase(history.begin() + 1);
     }
+}
+
+// Change the name of the session
+void Session::changeName(const string& n) {
+	name = n;
+	button->setText(QString::fromStdString(name));
 }
 
 // Handle data received from the server
