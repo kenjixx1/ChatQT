@@ -54,7 +54,7 @@ public:
     QProgressBar *progressBar_3;
     QFrame *RightFrame;
     QVBoxLayout *verticalLayout_4;
-    QStackedWidget *stackedWidget;
+    QStackedWidget *StackedChatFrame;
     QWidget *ChatFrame;
     QVBoxLayout *verticalLayout_3;
     QScrollArea *TestMessageScrollArea;
@@ -320,8 +320,8 @@ public:
         verticalLayout_4->setSpacing(6);
         verticalLayout_4->setContentsMargins(11, 11, 11, 11);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
-        stackedWidget = new QStackedWidget(RightFrame);
-        stackedWidget->setObjectName(QString::fromUtf8("stackedWidget"));
+        StackedChatFrame = new QStackedWidget(RightFrame);
+        StackedChatFrame->setObjectName(QString::fromUtf8("StackedChatFrame"));
         ChatFrame = new QWidget();
         ChatFrame->setObjectName(QString::fromUtf8("ChatFrame"));
         verticalLayout_3 = new QVBoxLayout(ChatFrame);
@@ -342,12 +342,12 @@ public:
 
         verticalLayout_3->addWidget(TestMessageScrollArea);
 
-        stackedWidget->addWidget(ChatFrame);
+        StackedChatFrame->addWidget(ChatFrame);
         page_4 = new QWidget();
         page_4->setObjectName(QString::fromUtf8("page_4"));
-        stackedWidget->addWidget(page_4);
+        StackedChatFrame->addWidget(page_4);
 
-        verticalLayout_4->addWidget(stackedWidget);
+        verticalLayout_4->addWidget(StackedChatFrame);
 
         SendMessageFrame_2 = new QFrame(RightFrame);
         SendMessageFrame_2->setObjectName(QString::fromUtf8("SendMessageFrame_2"));
