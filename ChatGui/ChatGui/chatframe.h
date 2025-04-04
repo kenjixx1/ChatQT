@@ -33,18 +33,10 @@ public:
         content = new QWidget();
         messagelayout = new QVBoxLayout(content);
         messagelayout->setContentsMargins(11, 11, 11, 11);
+		messagelayout->setAlignment(Qt::AlignTop);
         scrollarea->setWidget(content);
         pagelayout->addWidget(scrollarea);
         QMessageBox::information(nullptr, "H", "Created Frame");
-
-
-		/*QVBoxLayout* mainlayout = new QVBoxLayout(this);
-		scrollarea = new QScrollArea(this);
-		scrollarea->setWidgetResizable(true);
-		content = new QWidget(scrollarea);
-		messagelayout = new QVBoxLayout(content);
-		content->setLayout(messagelayout);
-		scrollarea->setWidget(content);*/
 
 
 	}

@@ -7,6 +7,7 @@
 #include "ui_ChatGui.h"
 #include "chatlist.h"
 #include "Session.h"
+#include "chatframe.h"
 
 class ChatGui : public QMainWindow
 {
@@ -48,4 +49,5 @@ private:
    Session* current_session;
    sqlite3* db;
    char* errMsg = 0;
+   ChatFrame* CurrentChatFrame;
 };
