@@ -33,12 +33,14 @@ public:
     explicit Session(int id, int index, const string& n, string& response, int l = 0, const string& input = "", QWidget* parent = nullptr);
 	Session() = default;
 
+    void addHistory(const string& msg, bool system);
     string getResponse(const string& input);
     string getAIResponse(const vector<json>& history);
     static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output);
     size_t estimateToken(const vector<json>& history);
     void trimHistory();
 
+    void changeName(const string& n) { name = n; };
     int getLoadSize() { return load_size; }
     int getHistorySize() { return history.size() - 1; }
 	int getID() { return id; }

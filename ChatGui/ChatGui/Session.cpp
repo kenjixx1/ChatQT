@@ -28,6 +28,11 @@ Session::Session(int id, int index, const string& n, string& response, int l, co
 	});
 }
 
+// Add a message to the history. If system is true, it's a system message; otherwise, it's a user message.
+void Session::addHistory(const string& msg, bool system) {
+    (system) ? history.push_back({ {"role", "system"}, {"content", msg} }): history.push_back({ {"role", "user"}, {"content", msg} });
+}
+
 // Construct a POST request to the chat model endpoint and process the response.
 string Session::getAIResponse(const vector<json>& history) {
     CURL* curl;

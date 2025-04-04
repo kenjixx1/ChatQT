@@ -27,6 +27,7 @@ public:
    void sessionSelected(Session* session, int page);
    void loadSessions();
    void loadConversation();
+   int countMessages();
 
 private slots:
    void on_CreateNewButton_clicked();
