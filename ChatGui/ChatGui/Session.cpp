@@ -11,7 +11,7 @@ Session::Session(int id, const string& n, string& response, int l, const string&
     // Generate a title if it's a new session
     if (name == "" && input != "") {
         response = getResponse(input);
-        string getTitle = "Give me a title to this conversation in the language the user used. Write only the title and nothing else.";
+        string getTitle = "Give me a title to this conversation in the language the user used. Write only a noun, no more than three words if it's in English, but no more than a sentence if it's in Thai.";
         history.push_back({ {"role", "user"}, {"content", getTitle} });
         string title = getAIResponse(history);
         history.pop_back();
@@ -21,10 +21,10 @@ Session::Session(int id, const string& n, string& response, int l, const string&
 
 	button = new QPushButton(parent);
 	button->setText(QString::fromStdString(name));
-	button->setMinimumSize(QSize(100, 25));
+	button->setMinimumSize(QSize(100, 35));
 	button->setStyleSheet("QPushButton{\n""background-color:#2aa5ff;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n""}");
-	button->setFont(QFont("Arial", 15, QFont::Bold));
-    button->setText("Kenji");
+	button->setFont(QFont("Arial", 12, QFont::Bold));
+    button->setText(QString::fromStdString(name));
     
     
 	connect(button, &QPushButton::clicked, this, [this]() {

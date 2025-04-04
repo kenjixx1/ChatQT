@@ -153,6 +153,12 @@ void ChatGui::on_DeleteButton_clicked() {
 
 void ChatGui::on_SendButton_clicked() {
     //Binding Button
+    QString message = ui.textEdit->toPlainText();
+
+    if (message.isEmpty()) {
+        return;
+    }
+
     if (current_session == nullptr) {
         QFont font1;
         font1.setPointSize(15);
@@ -160,35 +166,40 @@ void ChatGui::on_SendButton_clicked() {
         font1.setWeight(75);
         Session* TempTest;
         string something;
+
+		int id; // = addSessionRow();
+        
+		//Get the current time
+        CurrentChatFrame = DefaultChatFrame;
+        DefaultChatFrame = nullptr;
+
+		// Create a new session
         TempTest = new Session(sessions.size(), "", something, 0, ui.textEdit->toPlainText().toStdString(), ui.scrollAreaWidgetContents_3);
         connect(TempTest, &Session::selected, this, &ChatGui::sessionSelected);
         ui.verticalLayout_2->addWidget(TempTest, 0, Qt::AlignTop);
+        
+		// Add the message to the chat frame
         QString message = ui.textEdit->toPlainText();
-        if (!message.isEmpty()) {
-            CurrentChatFrame->AddFMessage(message, 1);
-            ui.textEdit->clear();
-            ui.textEdit->setFocus();
-        }
+        CurrentChatFrame->AddFMessage(message, 1);
+        ui.textEdit->clear();
+        ui.textEdit->setFocus();
         AddMessage(QString::fromStdString(something), 0);
+
+        // Update the database
+		updateMessages(TempTest->getID(), message.toStdString(), something);
+
+		// Add the new session to the list
 		sessions.push_back(TempTest);
-        connect(TempTest->button, &QPushButton::clicked, this, [=]() {
-            // Handle button click
-            sessionSelected(TempTest, 0);
-        });
 		current_session = TempTest;
 		QMessageBox::information(nullptr, "Message", QString::fromStdString(something));
-
-        /*connect(TempTest, &QPushButton::clicked, this, &::ChatGui::ActiveButton_Click);
-        int size = clist.Size();
-        TempTest->setProperty("ChatId", clist.GetMyID());
-        int id = clist.GetMyID();
-        QString name = "ChatID:" + QString::number(id);
-        TempTest->setText(name);
-        clist.AddList(TempTest);
-        ActiveButton = TempTest;
-        clist.SetActive(id);*/
-
-
+    }
+    else {
+		// Add the message to the chat frame
+		CurrentChatFrame->AddFMessage(message, 1);
+		ui.textEdit->clear();
+		ui.textEdit->setFocus();
+		string response = getAIResponse(message.toStdString());
+		AddMessage(QString::fromStdString(response), 0);
     }
     
 }
@@ -222,12 +233,6 @@ void ChatGui::on_RenameButton_clicked() {
         border-radius: 4px;
      }
 )");
-            
-            
-            
-            
-            
-           
 
         if (inputDialog->exec() == QDialog::Accepted) {
             QString input = inputDialog->textValue();
@@ -255,17 +260,17 @@ int ChatGui::getCurrentIndex() {
 	}
 }
 
+// Change the current session to the selected one
 void ChatGui::sessionSelected(Session* session, int page) {
-	//current_session->deactivate();
     current_session = session;
-    ui.StackedChatFrame->setCurrentIndex(getCurrentIndex()+1);
     
-    
+	// Load conversation if it's not already loaded
 	if (current_session->getLoadSize() > current_session->getHistorySize()) {
 		loadConversation();
 	}
 
 	// Change stacked widget to the conversation page
+    ui.StackedChatFrame->setCurrentIndex(getCurrentIndex()+1);
 }
 
 // Get AI response from the current session
