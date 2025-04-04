@@ -17,11 +17,11 @@ ChatGui::ChatGui(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
+    ui.verticalLayout_2->setAlignment(Qt::AlignTop);
     ChatFrame* FirstPage = new ChatFrame();
     ui.StackedChatFrame->addWidget(FirstPage->page);
     ui.StackedChatFrame->setCurrentWidget(FirstPage->page);
     CurrentChatFrame = FirstPage;
-
 	current_session = nullptr; 
     const char* dbPath = "chatHistory.db"; // Path to database
     int rc;
