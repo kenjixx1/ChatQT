@@ -21,8 +21,8 @@ ChatGui::ChatGui(QWidget *parent)
     ChatFrame* FirstPage = new ChatFrame();
     ui.StackedChatFrame->addWidget(FirstPage);
     ui.StackedChatFrame->setCurrentWidget(FirstPage);
-    CurrentChatFrame = FirstPage;
-    CurrentChatFrame->AddFMessage("What can I help you with?", 0);
+    DefaultChatFrame = FirstPage;
+    DefaultChatFrame->AddFMessage("What can I help you with?", 0);
 	current_session = nullptr; 
     const char* dbPath = "chatHistory.db"; // Path to database
     int rc;
@@ -114,13 +114,19 @@ ChatGui::~ChatGui()
 {}
 
 void ChatGui::on_CreateNewButton_clicked() {
-    ChatFrame* chat = new ChatFrame();
-    ui.StackedChatFrame->addWidget(chat);
-    ui.StackedChatFrame->setCurrentWidget(chat);
-    current_session = nullptr;
-    CurrentChatFrame = chat;
-    CurrentChatFrame->AddFMessage("What Can I help you with?", 0);
-    string res;
+    //
+    if (DefaultChatFrame==nullptr) {
+        DefaultChatFrame = new ChatFrame();
+        ui.StackedChatFrame->addWidget(DefaultChatFrame);
+        ui.StackedChatFrame->setCurrentWidget(DefaultChatFrame);
+		DefaultChatFrame->AddFMessage("What can I help you with?", 0);
+		current_session = nullptr;
+    }
+    else {
+        ui.StackedChatFrame->setCurrentWidget(DefaultChatFrame);
+        current_session = nullptr;
+    }
+    //
 	
     //AddMessage("What can I help you with?", 0);
     
@@ -166,14 +172,14 @@ void ChatGui::on_SendButton_clicked() {
         font1.setWeight(75);
         Session* TempTest;
         string something;
-
-		int id; // = addSessionRow();
+      
+        int id; // = addSessionRow();
         
-		//Get the current time
+		    //Get the current time
         CurrentChatFrame = DefaultChatFrame;
         DefaultChatFrame = nullptr;
 
-		// Create a new session
+		    // Create a new session
         TempTest = new Session(sessions.size(), "", something, 0, ui.textEdit->toPlainText().toStdString(), ui.scrollAreaWidgetContents_3);
         connect(TempTest, &Session::selected, this, &ChatGui::sessionSelected);
         ui.verticalLayout_2->addWidget(TempTest, 0, Qt::AlignTop);
