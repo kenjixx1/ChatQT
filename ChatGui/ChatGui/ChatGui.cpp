@@ -142,17 +142,21 @@ void ChatGui::ClearLayout(QLayout* layout) {
 }
 
 void ChatGui::on_DeleteButton_clicked() {
-    if (current_session != nullptr) {
+    if (current_session != nullptr && CurrentChatFrame!= nullptr) {
         deleteSession();
         // remove the page
         ui.StackedChatFrame->removeWidget(CurrentChatFrame);
-		delete CurrentChatFrame;
+        ui.verticalLayout_2->removeWidget(current_session);
+		    delete current_session;
+		    delete CurrentChatFrame;
         ChatFrame* newpage = new ChatFrame();
         ui.StackedChatFrame->addWidget(newpage);
         ui.StackedChatFrame->setCurrentWidget(newpage);
-        CurrentChatFrame = newpage;
-        CurrentChatFrame->AddFMessage("What can I help you with?", 0);
+        DefaultChatFrame = newpage;
+        DefaultChatFrame->AddFMessage("What can I help you with?", 0);
+        
     }
+	CurrentChatFrame = nullptr;
     current_session = nullptr;
     
 }
@@ -191,6 +195,10 @@ void ChatGui::on_SendButton_clicked() {
         ui.textEdit->setFocus();
         AddMessage(QString::fromStdString(something), 0);
 
+		QString AIResponse = QString::fromStdString(something);
+
+
+
         // Update the database
 		updateMessages(TempTest->getID(), message.toStdString(), something);
 		updateSessionName(TempTest->getID(), TempTest->getName());
@@ -198,7 +206,6 @@ void ChatGui::on_SendButton_clicked() {
 		// Add the new session to the list
 		sessions.push_back(TempTest);
 		current_session = TempTest;
-		QMessageBox::information(nullptr, "Message", QString::fromStdString(something));
     }
     else {
 		// Add the message to the chat frame
@@ -272,13 +279,20 @@ int ChatGui::getCurrentIndex() {
 void ChatGui::sessionSelected(Session* session, int page) {
     current_session = session;
     
+	ui.StackedChatFrame->setCurrentIndex(getCurrentIndex() + 1);
+	CurrentChatFrame = qobject_cast<ChatFrame*>(ui.StackedChatFrame->currentWidget());
+	//ui.StackedChatFrame->setCurrentWidget(CurrentChatFrame);    
+	if (CurrentChatFrame == nullptr) {
+		return;
+	}
+
 	// Load conversation if it's not already loaded
 	if (current_session->getLoadSize() > current_session->getHistorySize()) {
 		loadConversation();
 	}
 
 	// Change stacked widget to the conversation page
-    ui.StackedChatFrame->setCurrentIndex(getCurrentIndex()+1);
+    //ui.StackedChatFrame->setCurrentIndex(getCurrentIndex()+1);
 }
 
 // Get AI response from the current session
