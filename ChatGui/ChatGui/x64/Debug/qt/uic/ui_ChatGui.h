@@ -134,8 +134,8 @@ public:
 
         frame_3 = new QFrame(LeftFrame);
         frame_3->setObjectName(QString::fromUtf8("frame_3"));
-        frame_3->setMinimumSize(QSize(100, 40));
-        frame_3->setMaximumSize(QSize(16777215, 40));
+        frame_3->setMinimumSize(QSize(100, 43));
+        frame_3->setMaximumSize(QSize(16777215, 43));
         frame_3->setStyleSheet(QString::fromUtf8("background-color: rgb(52, 57, 61);\n"
 "border-radius:15px;"));
         frame_3->setFrameShape(QFrame::StyledPanel);

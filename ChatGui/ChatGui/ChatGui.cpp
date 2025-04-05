@@ -31,10 +31,13 @@ ChatGui::ChatGui(QWidget *parent)
 	// Check if the database file exists and create tables else open the database
 	if (!QFile::exists(dbPath)) {
         rc = sqlite3_open(dbPath, &db);
+        sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
 		createDataBase(rc);
     }
     else {
 		rc = sqlite3_open(dbPath, &db);
+        sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
+		loadSessions();
     }
 
         qApp->setStyleSheet(R"(
@@ -68,7 +71,6 @@ QScrollBar::sub-page:vertical {
     DeactiveSS = "QPushButton{\n""background-color:#2aa5ff;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n"
             "}";
 
-    //QMessageBox::information(nullptr, "Message", "ClickEd");
 
     connect(ui.textEdit, &QTextEdit::textChanged, this, [=] {
         QTextDocument* doc = ui.textEdit->document();
@@ -84,8 +86,6 @@ QScrollBar::sub-page:vertical {
         int visline = qMin(qMax(currentline, min), max);
         int newheight = visline * height + pad;
         ui.textEdit->setFixedHeight(newheight);
-
-		//QMessageBox::information(nullptr, "Message", QString::number(currentline));
 
 		QTextCursor cursor = ui.textEdit->textCursor();
 		int cursorPos = cursor.position();
@@ -163,7 +163,7 @@ void ChatGui::on_DeleteButton_clicked() {
         ui.StackedChatFrame->setCurrentWidget(newpage);
         DefaultChatFrame = newpage;
         DefaultChatFrame->AddFMessage("What can I help you with?", 0);
-        
+
     }
 	CurrentChatFrame = nullptr;
     current_session = nullptr;
@@ -192,44 +192,40 @@ void ChatGui::on_SendButton_clicked() {
         CurrentChatFrame = DefaultChatFrame;
         DefaultChatFrame = nullptr;
 
-
-            //Add User Input To the chat Frame
+      //Add User Input To the chat Frame
         CurrentChatFrame->AddFMessage(message, 1);
         ui.textEdit->clear();
         ui.textEdit->setFocus();
-		ui.SendButton->setEnabled(false);
-		ui.textEdit->setEnabled(false);
+    		ui.SendButton->setEnabled(false);
+		    ui.textEdit->setEnabled(false);
 
-
-		    // Create a new session
-        TempTest = new Session(sessions.size(), "", something, 0, message.toStdString(), ui.scrollAreaWidgetContents_3);
+        TempTest = new Session(id, "", something, 0, ui.textEdit->toPlainText().toStdString(), ui.scrollAreaWidgetContents_3);
         connect(TempTest, &Session::selected, this, &ChatGui::sessionSelected);
         ui.verticalLayout_2->addWidget(TempTest, 0, Qt::AlignTop);
         
-		// Add the message to the chat frame
+		    // Add the message to the chat frame
         AddMessage(QString::fromStdString(something), 0);
-		ui.SendButton->setEnabled(true);
-		ui.textEdit->setEnabled(true);
+		    ui.SendButton->setEnabled(true);
+		    ui.textEdit->setEnabled(true);
 
-		QString AIResponse = QString::fromStdString(something);
-
-
+	    	QString AIResponse = QString::fromStdString(something);
 
         // Update the database
-		updateMessages(TempTest->getID(), message.toStdString(), something);
-		updateSessionName(TempTest->getID(), TempTest->getName());
+	    	updateMessages(id, message.toStdString(), something);
+	    	updateSessionName(id, TempTest->getName());
+	    	updateHistorySize(id, TempTest->getHistorySize());
 
-		// Add the new session to the list
-		sessions.push_back(TempTest);
-		current_session = TempTest;
+	    	// Add the new session to the list
+	     	sessions.push_back(TempTest);
+		    current_session = TempTest;
     }
     else {
-		// Add the message to the chat frame
-		CurrentChatFrame->AddFMessage(message, 1);
-		ui.textEdit->clear();
-		ui.textEdit->setFocus();
-		string response = getAIResponse(message.toStdString());
-		AddMessage(QString::fromStdString(response), 0);
+		    // Add the message to the chat frame
+		    CurrentChatFrame->AddFMessage(message, 1);
+	    	ui.textEdit->clear();
+    		ui.textEdit->setFocus();
+	    	string response = getAIResponse(message.toStdString());
+        AddMessage(QString::fromStdString(response), 0);
     }
     
 }
@@ -348,7 +344,7 @@ void ChatGui::updateMessages(int id, const string& user, const string& system) {
     const char* sql = "INSERT INTO messages (session_id, user, system) VALUES (?, ?, ?);";
 
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-    if (checkQuery(rc)) {
+    if (!checkQuery(rc)) {
         sqlite3_finalize(stmt);
         return;
     }
@@ -369,19 +365,22 @@ void ChatGui::updateMessages(int id, const string& user, const string& system) {
 // Create a new session in the database
 int ChatGui::addSessionRow() {
     sqlite3_stmt* stmt;
-    const char* sql = "INSERT INTO messages (name, history_size) VALUES (?, 0);";
+    const char* sql = "INSERT INTO sessions (name, history_size) VALUES (?, 0);";
 
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-    if (checkQuery(rc)) {
+    if (!checkQuery(rc)) {
+		QMessageBox::critical(this, "Error", "Failed to prepare the statement: " + QString::fromStdString(sqlite3_errmsg(db)));
         sqlite3_finalize(stmt);
         return 0;
     }
 
-    sqlite3_bind_text(stmt, 1, "", -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, "temp", -1, SQLITE_STATIC);
 
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE) {
+		QMessageBox::critical(this, "Error", "Failed to insert the messages: " + QString::fromStdString(sqlite3_errmsg(db)));
         qDebug() << "Failed to insert the messages: " << sqlite3_errmsg(db) << endl;
+        return 0;
     }
 
     sqlite3_finalize(stmt);
@@ -395,7 +394,8 @@ void ChatGui::updateSessionName(int id, const string& name) {
     const char* sql = "UPDATE sessions SET name = ? WHERE id = ?;";
 
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-    if (checkQuery(rc)) {
+    if (!checkQuery(rc)) {
+		QMessageBox::critical(this, "Error", "Failed to prepare the statement: " + QString::fromStdString(sqlite3_errmsg(db)));
         sqlite3_finalize(stmt);
         return;
     }
@@ -415,10 +415,11 @@ void ChatGui::updateSessionName(int id, const string& name) {
 // Update the history size of a session in the database
 void ChatGui::updateHistorySize(int id, int size) {
     sqlite3_stmt* stmt;
-    const char* sql = "UPDATE sessions SET hisotory_size = ? WHERE id = ?;";
+    const char* sql = "UPDATE sessions SET history_size = ? WHERE id = ?;";
 
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-    if (checkQuery(rc)) {
+    if (!checkQuery(rc)) {
+		QMessageBox::critical(this, "Error", "Failed to prepare the statement: " + QString::fromStdString(sqlite3_errmsg(db)));
         sqlite3_finalize(stmt);
         return;
     }
@@ -429,7 +430,9 @@ void ChatGui::updateHistorySize(int id, int size) {
 
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE) {
+		QMessageBox::critical(this, "Error", "Failed to insert the messages: " + QString::fromStdString(sqlite3_errmsg(db)));
         qDebug() << "Failed to insert the messages: " << sqlite3_errmsg(db) << endl;
+        return;
     }
 
     sqlite3_finalize(stmt);
@@ -440,7 +443,8 @@ void ChatGui::loadSessions() {
 	sqlite3_stmt* stmt;
 	const char* sql = "SELECT id, name, history_size FROM sessions;";
 	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-	if (checkQuery(rc)) {
+	if (!checkQuery(rc)) {
+		QMessageBox::critical(this, "Error", "Failed to prepare the statement: " + QString::fromStdString(sqlite3_errmsg(db))); 
 		sqlite3_finalize(stmt);
 		return;
 	}
@@ -452,6 +456,7 @@ void ChatGui::loadSessions() {
         string temp;
 		Session* session = new Session(id, name, temp, history_size, "", ui.scrollAreaWidgetContents_3);
 		connect(session, &Session::selected, this, &ChatGui::sessionSelected);
+		session->changeName(name);
         ui.verticalLayout_2->addWidget(session, 0, Qt::AlignTop);
         ChatFrame* newpage = new ChatFrame();
         ui.StackedChatFrame->addWidget(newpage);
@@ -469,13 +474,14 @@ void ChatGui::loadConversation() {
 	sqlite3_stmt* stmt;
 	const char* sql = "SELECT user, system FROM messages WHERE session_id = ?;";
 	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-	if (checkQuery(rc)) {
+	if (!checkQuery(rc)) {
+		QMessageBox::critical(this, "Error", "Failed to prepare the statement: " + QString::fromStdString(sqlite3_errmsg(db)));
 		sqlite3_finalize(stmt);
 		return;
 	}
 	sqlite3_bind_int(stmt, 1, current_session->getID());
 
-	int his_track = countMessages() - current_session->getLoadSize(); // Track when to push messages into history (for AI)
+    int his_track = countMessages() - (current_session->getLoadSize() / 2); // Track when to push messages into history (for AI)
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
 		const char* user = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
 		const char* system = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
@@ -497,7 +503,7 @@ void ChatGui::deleteSession() {
 	sqlite3_stmt* stmt;
 	const char* sql = "DELETE FROM sessions WHERE id = ?;";
 	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-	if (checkQuery(rc)) {
+	if (!checkQuery(rc)) {
 		sqlite3_finalize(stmt);
 		return;
 	}
@@ -514,7 +520,7 @@ int ChatGui::countMessages() {
 	sqlite3_stmt* stmt;
 	const char* sql = "SELECT COUNT(*) FROM messages WHERE session_id = ?;";
 	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-	if (checkQuery(rc)) {
+	if (!checkQuery(rc)) {
 		sqlite3_finalize(stmt);
 		return 0;
 	}
