@@ -108,7 +108,7 @@ public:
         label = new QLabel(FChatQt);
         label->setObjectName(QString::fromUtf8("label"));
         QFont font;
-        font.setPointSize(24);
+        font.setPointSize(22);
         label->setFont(font);
         label->setStyleSheet(QString::fromUtf8("\n"
 "color: rgb(0, 133, 255);"));
@@ -417,8 +417,8 @@ public:
 
     void retranslateUi(QMainWindow *ChatGuiClass)
     {
-        ChatGuiClass->setWindowTitle(QApplication::translate("ChatGuiClass", "ChatGui", nullptr));
-        label->setText(QApplication::translate("ChatGuiClass", "ChatQT", nullptr));
+        ChatGuiClass->setWindowTitle(QApplication::translate("ChatGuiClass", "ChatQT AI", nullptr));
+        label->setText(QApplication::translate("ChatGuiClass", "ChatQT AI", nullptr));
         label_2->setText(QApplication::translate("ChatGuiClass", "Chats", nullptr));
         CreateNewButton->setText(QApplication::translate("ChatGuiClass", "+ New Chat  ", nullptr));
         DeleteButton->setText(QString());
