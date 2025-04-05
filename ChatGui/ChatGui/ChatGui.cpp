@@ -186,6 +186,7 @@ void ChatGui::on_SendButton_clicked() {
         Session* TempTest;
         string something;
       
+        //get row id
         int id = addSessionRow();
         
 		//Get the current chat frame
