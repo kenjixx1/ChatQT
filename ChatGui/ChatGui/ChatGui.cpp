@@ -147,14 +147,17 @@ void ChatGui::on_DeleteButton_clicked() {
         // remove the page
         ui.StackedChatFrame->removeWidget(CurrentChatFrame);
         ui.verticalLayout_2->removeWidget(current_session);
+
 		for (auto& session : sessions) {
 			if (session->getID() == current_session->getID()) {
 				sessions.erase(std::remove(sessions.begin(), sessions.end(), session), sessions.end());
 				break;
 			}
 		}
-        delete current_session;
-        delete CurrentChatFrame;
+       
+		    delete current_session;
+		    delete CurrentChatFrame;
+
         ChatFrame* newpage = new ChatFrame();
         ui.StackedChatFrame->addWidget(newpage);
         ui.StackedChatFrame->setCurrentWidget(newpage);
@@ -183,11 +186,12 @@ void ChatGui::on_SendButton_clicked() {
         Session* TempTest;
         string something;
       
-        int id; // = addSessionRow();
+        int id = addSessionRow();
         
-		    //Get the current time
+		//Get the current chat frame
         CurrentChatFrame = DefaultChatFrame;
         DefaultChatFrame = nullptr;
+
 
             //Add User Input To the chat Frame
         CurrentChatFrame->AddFMessage(message, 1);
@@ -213,6 +217,7 @@ void ChatGui::on_SendButton_clicked() {
 
         // Update the database
 		updateMessages(TempTest->getID(), message.toStdString(), something);
+		updateSessionName(TempTest->getID(), TempTest->getName());
 
 		// Add the new session to the list
 		sessions.push_back(TempTest);
@@ -262,6 +267,7 @@ void ChatGui::on_RenameButton_clicked() {
         if (inputDialog->exec() == QDialog::Accepted) {
             QString input = inputDialog->textValue();
 			current_session->changeName(input.toStdString());
+			updateSessionName(current_session->getID(), input.toStdString());
         }
     }
 }
@@ -310,6 +316,7 @@ void ChatGui::sessionSelected(Session* session, int page) {
 string ChatGui::getAIResponse(const string& userMessage) {
 	string response = current_session->getResponse(userMessage);
 	updateMessages(current_session->getID(), userMessage, response);
+	updateHistorySize(current_session->getID(), current_session->getHistorySize());
     return response;
 }
 
@@ -445,9 +452,14 @@ void ChatGui::loadSessions() {
         string temp;
 		Session* session = new Session(id, name, temp, history_size, "", ui.scrollAreaWidgetContents_3);
 		connect(session, &Session::selected, this, &ChatGui::sessionSelected);
+        ui.verticalLayout_2->addWidget(session, 0, Qt::AlignTop);
+        ChatFrame* newpage = new ChatFrame();
+        ui.StackedChatFrame->addWidget(newpage);
+        ui.StackedChatFrame->setCurrentWidget(newpage);
+        DefaultChatFrame = newpage;
+        DefaultChatFrame->AddFMessage("What can I help you with?", 0);
+        
         sessions.push_back(session); 
-
-		// Add sessions and connect
 	}
 	sqlite3_finalize(stmt);
 }
