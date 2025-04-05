@@ -147,8 +147,17 @@ void ChatGui::on_DeleteButton_clicked() {
         // remove the page
         ui.StackedChatFrame->removeWidget(CurrentChatFrame);
         ui.verticalLayout_2->removeWidget(current_session);
+
+		for (auto& session : sessions) {
+			if (session->getID() == current_session->getID()) {
+				sessions.erase(std::remove(sessions.begin(), sessions.end(), session), sessions.end());
+				break;
+			}
+		}
+       
 		    delete current_session;
 		    delete CurrentChatFrame;
+
         ChatFrame* newpage = new ChatFrame();
         ui.StackedChatFrame->addWidget(newpage);
         ui.StackedChatFrame->setCurrentWidget(newpage);
@@ -183,17 +192,24 @@ void ChatGui::on_SendButton_clicked() {
         CurrentChatFrame = DefaultChatFrame;
         DefaultChatFrame = nullptr;
 
-		// Create a new session
-        TempTest = new Session(sessions.size(), "", something, 0, ui.textEdit->toPlainText().toStdString(), ui.scrollAreaWidgetContents_3);
+
+            //Add User Input To the chat Frame
+        CurrentChatFrame->AddFMessage(message, 1);
+        ui.textEdit->clear();
+        ui.textEdit->setFocus();
+		ui.SendButton->setEnabled(false);
+		ui.textEdit->setEnabled(false);
+
+
+		    // Create a new session
+        TempTest = new Session(sessions.size(), "", something, 0, message.toStdString(), ui.scrollAreaWidgetContents_3);
         connect(TempTest, &Session::selected, this, &ChatGui::sessionSelected);
         ui.verticalLayout_2->addWidget(TempTest, 0, Qt::AlignTop);
         
 		// Add the message to the chat frame
-        QString message = ui.textEdit->toPlainText();
-        CurrentChatFrame->AddFMessage(message, 1);
-        ui.textEdit->clear();
-        ui.textEdit->setFocus();
         AddMessage(QString::fromStdString(something), 0);
+		ui.SendButton->setEnabled(true);
+		ui.textEdit->setEnabled(true);
 
 		QString AIResponse = QString::fromStdString(something);
 
@@ -280,6 +296,7 @@ void ChatGui::sessionSelected(Session* session, int page) {
     current_session = session;
     
 	ui.StackedChatFrame->setCurrentIndex(getCurrentIndex() + 1);
+	QMessageBox::information(nullptr, "Message", QString::number(getCurrentIndex() + 1));
 	CurrentChatFrame = qobject_cast<ChatFrame*>(ui.StackedChatFrame->currentWidget());
 	//ui.StackedChatFrame->setCurrentWidget(CurrentChatFrame);    
 	if (CurrentChatFrame == nullptr) {
