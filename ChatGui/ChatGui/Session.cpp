@@ -11,7 +11,7 @@ Session::Session(int id, const string& n, string& response, int l, const string&
     // Generate a title if it's a new session
     if (name == "" && input != "") {
         response = getResponse(input);
-        string getTitle = "Give me a title to this conversation in the language the user used. Write only a noun, no more than 18 characters if it's in English, but no more than a short sentence if it's in Thai.";
+        string getTitle = "Give me a title to this conversation in the language the user used. Write only a noun, no more than 18 characters if it's in English, but no more than three words if it's in Thai.";
         history.push_back({ {"role", "user"}, {"content", getTitle} });
         string title = getAIResponse(history);
         history.pop_back();
