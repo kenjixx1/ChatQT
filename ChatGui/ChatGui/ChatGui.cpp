@@ -147,8 +147,14 @@ void ChatGui::on_DeleteButton_clicked() {
         // remove the page
         ui.StackedChatFrame->removeWidget(CurrentChatFrame);
         ui.verticalLayout_2->removeWidget(current_session);
-		delete current_session;
-		delete CurrentChatFrame;
+		for (auto& session : sessions) {
+			if (session->getID() == current_session->getID()) {
+				sessions.erase(std::remove(sessions.begin(), sessions.end(), session), sessions.end());
+				break;
+			}
+		}
+        delete current_session;
+        delete CurrentChatFrame;
         ChatFrame* newpage = new ChatFrame();
         ui.StackedChatFrame->addWidget(newpage);
         ui.StackedChatFrame->setCurrentWidget(newpage);
@@ -284,6 +290,7 @@ void ChatGui::sessionSelected(Session* session, int page) {
     current_session = session;
     
 	ui.StackedChatFrame->setCurrentIndex(getCurrentIndex() + 1);
+	QMessageBox::information(nullptr, "Message", QString::number(getCurrentIndex() + 1));
 	CurrentChatFrame = qobject_cast<ChatFrame*>(ui.StackedChatFrame->currentWidget());
 	//ui.StackedChatFrame->setCurrentWidget(CurrentChatFrame);    
 	if (CurrentChatFrame == nullptr) {
