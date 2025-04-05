@@ -16,11 +16,9 @@ Session::Session(int id, const string& n, string& response, int l, const string&
         string title = getAIResponse(history);
         history.pop_back();
         name = title;
-        cout << "Title: " << title << endl;
     }
 
 	button = new QPushButton(parent);
-	button->setText(QString::fromStdString(name));
 	button->setMinimumSize(QSize(100, 35));
 	button->setStyleSheet("QPushButton{\n""background-color:#2aa5ff;\n""color: rgb(255, 255, 255);\n""border-radius:0px;\n""}\n""QPushButton::hover{\n""background-color:#0865c5;\n""}");
 	button->setFont(QFont("Arial", 12, QFont::Bold));
