@@ -170,6 +170,8 @@ void ChatGui::on_DeleteButton_clicked() {
     
 }
 
+
+
 void ChatGui::on_SendButton_clicked() {
     //Binding Button
     QString message = ui.textEdit->toPlainText();
